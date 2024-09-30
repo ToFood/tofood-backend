@@ -5,7 +5,7 @@ metadata:
   labels:
     app: tech-challenge
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: tech-challenge
@@ -39,4 +39,15 @@ spec:
             port: 80
           initialDelaySeconds: 5
           periodSeconds: 5
+        env:
+          - name: NODE_ENV
+            value: "production"
       restartPolicy: Always
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1

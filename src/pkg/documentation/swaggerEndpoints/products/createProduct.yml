@@ -1,0 +1,49 @@
+paths:
+  /products:
+    post:
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - name
+                - category
+                - price
+                - description
+                - image
+              properties:
+                name:
+                  type: string
+                  description: The name of the product
+                category:
+                  type: string
+                  enum:
+                    - lanche
+                    - acompanhamento
+                    - bebida
+                    - sobremesa
+                  description: "The category of the product. Should be one of: lanche, acompanhamento, bebida, sobremesa"
+                price:
+                  type: string
+                  description: The price of the product
+                description:
+                  type: string
+                  description: The description of the product
+                image:
+                  type: string
+                  format: binary
+                  description: The image of the product
+      responses:
+        "201":
+          description: Created - Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "./src/adapters/documentation/swaggerModels/ProductModel.yml"
+        "500":
+          description: Internal Server Error - Error creating product
+      tags:
+        - Products

@@ -1,0 +1,50 @@
+components:
+  schemas:
+    Order:
+      type: object
+      required:
+        - user
+        - orderProducts
+        - status
+        - payment
+      properties:
+        id:
+          type: string
+          description: The auto-generated id of the order
+        user:
+          type: string
+          description: The id of the user who placed the order
+        orderProducts:
+          type: array
+          items:
+            type: object
+            required:
+              - product
+              - quantity
+            properties:
+              product:
+                type: string
+                description: The id of the product in the order
+              quantity:
+                type: integer
+                description: The quantity of the product in the order
+                minimum: 1
+        status:
+          type: string
+          description: The status of the order
+        payment:
+          type: string
+          description: The payment status of the order
+        createdAt:
+          type: string
+          format: date-time
+          description: The date and time when the order was created
+      example:
+        id: abc123
+        user: xyz456
+        orderProducts:
+          - product: def789
+            quantity: 2
+        status: pending
+        payment: pending
+        createdAt: "2024-05-31T12:00:00Z"

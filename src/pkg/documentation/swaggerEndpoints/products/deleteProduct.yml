@@ -1,0 +1,26 @@
+paths:
+  /products/{id}:
+    delete:
+      summary: Delete a product by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the product to delete
+      responses:
+        "200":
+          description: OK - Product deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message indicating the deletion was successful
+        "500":
+          description: Internal Server Error - Error deleting product
+      tags:
+        - Products

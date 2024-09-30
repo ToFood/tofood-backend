@@ -1,0 +1,63 @@
+paths:
+  /users:
+    post:
+      summary: Create a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - cpf
+              properties:
+                name:
+                  type: string
+                  description: The name of the user
+                email:
+                  type: string
+                  description: The email of the user
+                cpf:
+                  type: string
+                  description: The CPF of the user (exactly 11 digits)
+      responses:
+        "201":
+          description: Created - User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "./src/adapters/documentation/swaggerModels/UserModel.yml"
+        "400":
+          description: Bad Request - Invalid request body
+        "500":
+          description: Internal Server Error - Failure to register user
+      tags:
+        - Users
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - name
+        - email
+        - cpf
+      properties:
+        id:
+          type: string
+          description: The user ID
+        name:
+          type: string
+          description: The name of the user
+        email:
+          type: string
+          description: The email of the user
+        cpf:
+          type: string
+          description: The CPF of the user (exactly 11 digits)
+      example:
+        id: "1"
+        name: "John Doe"
+        email: "john.doe@example.com"
+        cpf: "12345678901"

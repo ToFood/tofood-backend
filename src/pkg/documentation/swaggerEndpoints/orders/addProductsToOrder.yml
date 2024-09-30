@@ -1,0 +1,63 @@
+paths:
+  /orders/{orderId}:
+    put:
+      summary: Add products to an existing order
+      parameters:
+        - in: path
+          name: orderId
+          schema:
+            type: string
+          required: true
+          description: The ID of the order to which products will be added
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productIds:
+                  type: array
+                  items:
+                    type: string
+                  description: An array of product IDs to add to the order
+              required:
+                - productIds
+      responses:
+        "200":
+          description: OK - Products added to the order successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The ID of the updated order
+                  user:
+                    type: string
+                    description: The ID of the user associated with the order
+                  orderProducts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product:
+                          type: string
+                          description: The ID of the product added to the order
+                        quantity:
+                          type: number
+                          description: The quantity of the product added to the order
+                  status:
+                    type: string
+                    description: The status of the order after adding products
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: The timestamp when the order was last updated
+        "400":
+          description: Bad Request - Invalid request body
+        "500":
+          description: Internal Server Error - Error adding products to order
+      tags:
+        - Orders

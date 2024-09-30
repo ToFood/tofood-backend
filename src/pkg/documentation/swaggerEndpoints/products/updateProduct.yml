@@ -1,0 +1,50 @@
+paths:
+  /products/{id}:
+    put:
+      summary: Update an existing product
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the product to update
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the product
+                category:
+                  type: string
+                  enum:
+                    - lanche
+                    - acompanhamento
+                    - bebida
+                    - sobremesa
+                  description: "The category of the product. Should be one of: lanche, acompanhamento, bebida, sobremesa"
+                price:
+                  type: string
+                  description: The price of the product
+                description:
+                  type: string
+                  description: The description of the product
+                image:
+                  type: string
+                  format: binary
+                  description: The image of the product
+      responses:
+        "200":
+          description: OK - Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "./src/adapters/documentation/swaggerModels/ProductModel.yml"
+        "500":
+          description: Internal Server Error - Error updating product
+      tags:
+        - Products

@@ -1,0 +1,28 @@
+# paths:
+#   /products/{productId}:
+#     get:
+#       summary: Retrieve a product by ID
+#       parameters:
+#         - in: path
+#           name: productId
+#           required: true
+#           description: ID of the product to retrieve
+#           schema:
+#             type: string
+#       responses:
+#         "200":
+#           description: Successful response
+#           content:
+#             application/json:
+#               schema:
+#                 $ref: "./src/adapters/documentation/swaggerModels/ProductModel.yml"
+#         "500":
+#           description: Internal server error
+#           content:
+#             application/json:
+#               schema:
+#                 type: object
+#                 properties:
+#                   message:
+#                     type: string
+#                     description: Error message

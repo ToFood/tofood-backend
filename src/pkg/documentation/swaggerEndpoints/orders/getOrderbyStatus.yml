@@ -1,0 +1,31 @@
+paths:
+  /orders/status:
+    get:
+      summary: Get orders by status
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: array
+            items:
+              type: string
+              enum:
+                - OPENED
+                - RECEIVED
+                - PREPARING
+                - DONE
+                - FINISHED
+            example: ["OPENED", "RECEIVED"]
+      responses:
+        "200":
+          description: OK - Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "./src/adapters/documentation/swaggerModels/orderModel.yml"
+        "500":
+          description: Internal Server Error - Error retrieving orders
+      tags:
+        - Orders

@@ -1,0 +1,29 @@
+paths:
+  /products/category/{category}:
+    get:
+      summary: List products by category
+      parameters:
+        - in: path
+          name: category
+          required: true
+          schema:
+            type: string
+            enum:
+              - lanche
+              - acompanhamento
+              - bebida
+              - sobremesa
+          description: The category of the products to retrieve
+      responses:
+        "200":
+          description: OK - Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "./src/adapters/documentation/swaggerModels/ProductModel.yml"
+        "500":
+          description: Internal Server Error - Error retrieving products
+      tags:
+        - Products

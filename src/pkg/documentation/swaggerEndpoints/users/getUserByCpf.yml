@@ -1,0 +1,24 @@
+paths:
+  /users/{cpf}:
+    get:
+      summary: Get user by CPF
+      parameters:
+        - in: path
+          name: cpf
+          required: true
+          description: The CPF of the user to retrieve
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK - User found successfully
+          content:
+            application/json:
+              schema:
+                $ref: "./src/adapters/documentation/swaggerModels/UserModel.yml"
+        "400":
+          description: Bad Request - Invalid CPF format
+        "500":
+          description: Internal Server Error - Error retrieving user by CPF
+      tags:
+        - Users

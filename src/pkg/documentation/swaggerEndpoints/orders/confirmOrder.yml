@@ -1,0 +1,72 @@
+paths:
+  /orders/{orderId}/confirm:
+    put:
+      summary: Confirm an order
+      parameters:
+        - in: path
+          name: orderId
+          schema:
+            type: string
+          required: true
+          description: The ID of the order to be confirmed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: The status to set for the order (e.g., "CONFIRMED")
+                  enum: ["CONFIRMED"]
+                  example: CONFIRMED
+                payment:
+                  type: string
+                  description: The payment status for the order (e.g., "PAID")
+                  enum: ["PAID"]
+                  example: PAID
+              required:
+                - status
+                - payment
+      responses:
+        "200":
+          description: OK - Order confirmed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: The ID of the confirmed order
+                  user:
+                    type: string
+                    description: The ID of the user associated with the order
+                  orderProducts:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        product:
+                          type: string
+                          description: The ID of the product in the order
+                        quantity:
+                          type: number
+                          description: The quantity of the product in the order
+                  status:
+                    type: string
+                    description: The status of the confirmed order
+                  payment:
+                    type: string
+                    description: The payment status of the confirmed order
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: The timestamp when the order was confirmed
+        "400":
+          description: Bad Request - Invalid request body
+        "500":
+          description: Internal Server Error - Error confirming order
+      tags:
+        - Orders

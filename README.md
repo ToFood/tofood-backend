@@ -1,4 +1,4 @@
-# Fast-Food tech challenge
+# ToFood tech challenge
 
 Projeto em desenvolvimento conforme progresso da pós-graduação da FIAP - Software Architecture
 

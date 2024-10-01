@@ -1,0 +1,53 @@
+name: CI/CD Pipeline - Tofood API
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    name: Build, Push Docker Image, Deploy to EKS
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout do Código
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      # 2. Login no Docker Hub para construir e publicar imagem Docker
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 3. Build da Imagem Docker e Push para o Docker Hub
+      - name: Build Docker Image
+        run: docker build -t leonardo10sp/tech-challenge:latest .
+
+      - name: Push Docker Image
+        run: docker push leonardo10sp/tech-challenge:latest
+
+      # 4. Configuração do Kubectl e kubeconfig para acessar o cluster EKS
+      - name: Set up Kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: "v1.20.0"
+
+      # 5. Configuração do Kubeconfig do EKS
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name tofood-eks-cluster
+
+      # 6. Aplicar os Manifests do Kubernetes (Deployment e Service)
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f ./src/devOps/k8s/deployment.yaml
+          kubectl apply -f ./src/devOps/k8s/service.yaml

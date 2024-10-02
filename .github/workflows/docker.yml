@@ -1,6 +1,4 @@
-# Caminho do Arquivo: .github/workflows/docker-image-update.yml
-
-name: Atualizar Imagem Docker
+name: Update Docker Image
 
 on:
   push:
@@ -11,33 +9,48 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+
     steps:
-      # Passo 1: Fazer o checkout do repositório (atualizado para v3)
+      # Passo 1: Fazer o checkout do repositório (atualizado para v4)
       - name: Fazer checkout do repositório
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Passo 2: Configurar o Docker Buildx (para suporte a imagens multi-plataforma, se necessário)
+      # Passo 2: Configurar Docker Buildx (atualizado para v3)
       - name: Configurar Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
-      # Passo 3: Logar no Docker Hub (utilizando os segredos)
+      # Passo 3: Verificar se as variáveis de ambiente estão configuradas
+      - name: Verificar variáveis de ambiente
+        run: |
+          if [ -z "${DOCKER_USERNAME}" ]; then
+            echo "Erro: A variável DOCKER_USERNAME não está definida."
+            exit 1
+          fi
+          if [ -z "${{ secrets.DOCKER_PASSWORD }}" ]; then
+            echo "Erro: A variável DOCKER_PASSWORD não está definida."
+            exit 1
+          fi
+
+      # Passo 4: Logar no Docker Hub (atualizado para v3)
       - name: Logar no Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Passo 4: Construir a imagem Docker
+      # Passo 5: Construir a imagem Docker
       - name: Construir Imagem Docker
         run: |
           docker build -t leonardo10sp/tech-challenge:latest .
 
-      # Passo 5: Enviar a imagem Docker para o Docker Hub
+      # Passo 6: Enviar a imagem Docker para o Docker Hub
       - name: Enviar Imagem Docker
         run: |
           docker push leonardo10sp/tech-challenge:latest
-          
-      # Passo 6: Opcionalmente, taguear e enviar com a SHA do commit específico
+
+      # Passo 7: Opcionalmente, taguear e enviar com a SHA do commit específico
       - name: Taguear Imagem Docker com SHA do Commit
         run: |
           IMAGE_TAG="leonardo10sp/tech-challenge:${{ github.sha }}"

@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      DOCKER_USERNAME: ${{ env.DOCKER_USERNAME }}
 
     steps:
       # Passo 1: Fazer o checkout do repositório (atualizado para v4)

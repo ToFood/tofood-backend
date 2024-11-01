@@ -38,12 +38,15 @@ jobs:
       - name: 🛠️ Criar cluster EKS (se não existir)
         run: |
           if ! aws eks describe-cluster --name $CLUSTER_NAME --region $AWS_REGION; then
+            echo "Cluster não encontrado. Criando cluster EKS..."
             aws eks create-cluster \
               --name $CLUSTER_NAME \
               --region $AWS_REGION \
               --kubernetes-version "1.21" \  # Substitua pela versão desejada
-              --role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/EKSClusterRole \  # Substitua pelo ARN do seu papel de IAM
+              --role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/EKSClusterRole \  # Substitua pelo ARN da função de IAM para o cluster
               --resources-vpc-config subnetIds=subnet-xxxxxx,subnet-yyyyyy,securityGroupIds=sg-zzzzzz;
+            echo "Cluster EKS criado. Aguardando a finalização da criação..."
+            aws eks wait cluster-active --name $CLUSTER_NAME --region $AWS_REGION
           else
             echo "Cluster EKS já existe.";
           fi
@@ -52,14 +55,17 @@ jobs:
       - name: 🛠️ Criar NodeGroup (se não existir)
         run: |
           if ! aws eks describe-nodegroup --cluster-name $CLUSTER_NAME --nodegroup-name $NODEGROUP_NAME --region $AWS_REGION; then
+            echo "NodeGroup não encontrado. Criando NodeGroup..."
             aws eks create-nodegroup \
               --cluster-name $CLUSTER_NAME \
               --nodegroup-name $NODEGROUP_NAME \
-              --node-role arn:aws:iam::${AWS_ACCOUNT_ID}:role/EKSNodeRole \  # Substitua pelo ARN do papel de IAM do Node
+              --node-role arn:aws:iam::${AWS_ACCOUNT_ID}:role/EKSNodeRole \  # Substitua pelo ARN da função de IAM para o NodeGroup
               --subnets subnet-xxxxxx subnet-yyyyyy \  # Substitua pelos IDs das subnets
               --scaling-config minSize=1,maxSize=3,desiredSize=2 \
               --instance-types t3.medium \
               --region $AWS_REGION;
+            echo "NodeGroup criado. Aguardando a finalização da criação..."
+            aws eks wait nodegroup-active --cluster-name $CLUSTER_NAME --nodegroup-name $NODEGROUP_NAME --region $AWS_REGION
           else
             echo "NodeGroup já existe.";
           fi

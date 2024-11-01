@@ -9,6 +9,18 @@ jobs:
   print-env-variables:
     runs-on: ubuntu-latest
 
+    env:
+      DB_HOST: ${{ vars.DB_HOST }}
+      DB_NAME: ${{ vars.DB_NAME }}
+      DB_PORT: ${{ vars.DB_PORT }}
+      DB_USER: ${{ vars.DB_USER }}
+      DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
+      AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+      DB_MONGO_HOST: ${{ vars.DB_MONGO_HOST }}
+      DB_MONGO_NAME: ${{ vars.DB_MONGO_NAME }}
+      DB_MONGO_PORT: ${{ vars.DB_MONGO_PORT }}
+      DB_MONGO_USER: ${{ vars.DB_MONGO_USER }}
+
     steps:
       - name: Fazer checkout do repositório
         uses: actions/checkout@v4

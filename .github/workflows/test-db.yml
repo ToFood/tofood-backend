@@ -1,0 +1,33 @@
+name: Test Database Connection
+
+on:
+  push:  # Dispara em qualquer commit em qualquer branch
+    branches:
+      - '**'
+
+jobs:
+  test-db-connection:
+    runs-on: ubuntu-latest
+
+    env:
+      DB_MONGO_HOST: ${{ vars.DB_MONGO_HOST }}
+      DB_MONGO_NAME: ${{ vars.DB_MONGO_NAME }}
+      DB_MONGO_PORT: ${{ vars.DB_MONGO_PORT }}
+      DB_MONGO_USER: ${{ vars.DB_MONGO_USER }}
+      DB_MONGO_PASSWORD: ${{ secrets.DB_MONGO_PASSWORD }}
+
+    steps:
+      - name: Instalar cliente MongoDB
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mongodb-clients
+
+      - name: Testar conexão com o MongoDB
+        run: |
+          echo "Testando conexão com o MongoDB..."
+          if mongo "mongodb://$DB_MONGO_USER:$DB_MONGO_PASSWORD@$DB_MONGO_HOST:$DB_MONGO_PORT/$DB_MONGO_NAME" --eval "db.stats()" > /dev/null 2>&1; then
+            echo "Conexão bem-sucedida com o banco de dados MongoDB!"
+          else
+            echo "::error:: Falha ao conectar ao banco de dados MongoDB. Verifique as credenciais e a configuração do banco."
+            exit 1
+          fi

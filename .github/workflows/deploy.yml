@@ -1,4 +1,4 @@
-name: Build, Push, and Deploy to AWS EKS
+name: Deploy 🌐
 
 on:
   push:
@@ -18,6 +18,7 @@ jobs:
       IMAGE_NAME: "tofood/backend"
       CLUSTER_NAME: "tofood-cluster-back"  # Substitua pelo nome do seu cluster EKS
       DEPLOYMENT_NAME: "tofood-deployment"  # Nome do seu Deployment no EKS
+      NODEGROUP_NAME: "tofood-nodegroup"  # Nome do NodeGroup
 
     steps:
       # Fazer checkout do código-fonte
@@ -32,6 +33,36 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Passar o token de sessão
           aws-region: ${{ vars.AWS_REGION }}
+
+      # Criar cluster EKS se não existir
+      - name: 🛠️ Criar cluster EKS (se não existir)
+        run: |
+          if ! aws eks describe-cluster --name $CLUSTER_NAME --region $AWS_REGION; then
+            aws eks create-cluster \
+              --name $CLUSTER_NAME \
+              --region $AWS_REGION \
+              --kubernetes-version "1.21" \  # Substitua pela versão desejada
+              --role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/EKSClusterRole \  # Substitua pelo ARN do seu papel de IAM
+              --resources-vpc-config subnetIds=subnet-xxxxxx,subnet-yyyyyy,securityGroupIds=sg-zzzzzz;
+          else
+            echo "Cluster EKS já existe.";
+          fi
+
+      # Criar NodeGroup se não existir
+      - name: 🛠️ Criar NodeGroup (se não existir)
+        run: |
+          if ! aws eks describe-nodegroup --cluster-name $CLUSTER_NAME --nodegroup-name $NODEGROUP_NAME --region $AWS_REGION; then
+            aws eks create-nodegroup \
+              --cluster-name $CLUSTER_NAME \
+              --nodegroup-name $NODEGROUP_NAME \
+              --node-role arn:aws:iam::${AWS_ACCOUNT_ID}:role/EKSNodeRole \  # Substitua pelo ARN do papel de IAM do Node
+              --subnets subnet-xxxxxx subnet-yyyyyy \  # Substitua pelos IDs das subnets
+              --scaling-config minSize=1,maxSize=3,desiredSize=2 \
+              --instance-types t3.medium \
+              --region $AWS_REGION;
+          else
+            echo "NodeGroup já existe.";
+          fi
 
       # Adicionar etapa de criação do repositório no ECR
       - name: 🛠️ Criar repositório ECR (se não existir)

@@ -1,4 +1,4 @@
-name: Print Environment Variables
+name: Print Organization Environment Variables and Secrets
 
 on:
   push:  # Dispara em qualquer commit em qualquer branch
@@ -6,41 +6,36 @@ on:
       - '**'
 
 jobs:
-  print-env-variables:
+  print-org-env-variables-secrets:
     runs-on: ubuntu-latest
 
     env:
-      DB_HOST: ${{ vars.DB_HOST }}
-      DB_NAME: ${{ vars.DB_NAME }}
-      DB_PORT: ${{ vars.DB_PORT }}
-      DB_USER: ${{ vars.DB_USER }}
-      DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
       AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
       DB_MONGO_HOST: ${{ vars.DB_MONGO_HOST }}
       DB_MONGO_NAME: ${{ vars.DB_MONGO_NAME }}
       DB_MONGO_PORT: ${{ vars.DB_MONGO_PORT }}
       DB_MONGO_USER: ${{ vars.DB_MONGO_USER }}
+      DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
 
     steps:
       - name: Fazer checkout do repositório
         uses: actions/checkout@v4
 
-      - name: Exibir variáveis de ambiente do repositório
-        run: |
-          echo "=== Variáveis de ambiente do repositório ==="
-          echo "DB_HOST: $DB_HOST"
-          echo "DB_NAME: $DB_NAME"
-          echo "DB_PORT: $DB_PORT"
-          echo "DB_USER: $DB_USER"
-          echo "DOCKER_USERNAME: $DOCKER_USERNAME"
-          echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
-
       - name: Exibir variáveis de ambiente da organização
         run: |
           echo "=== Variáveis de ambiente da organização ==="
+          echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
           echo "DB_MONGO_HOST: $DB_MONGO_HOST"
           echo "DB_MONGO_NAME: $DB_MONGO_NAME"
           echo "DB_MONGO_PORT: $DB_MONGO_PORT"
           echo "DB_MONGO_USER: $DB_MONGO_USER"
           echo "DOCKER_USERNAME: $DOCKER_USERNAME"
-          echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
+
+      - name: Exibir secrets da organização
+        run: |
+          echo "=== Secrets da organização ==="
+          echo "AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          echo "AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}"
+          echo "DB_MONGO_PASSWORD: ${{ secrets.DB_MONGO_PASSWORD }}"
+          echo "DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}"
+          echo "SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}"

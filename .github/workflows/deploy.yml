@@ -13,6 +13,7 @@ jobs:
       AWS_REGION: ${{ vars.AWS_REGION }}
       AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}  # Adicionado o token de sessão
       AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
       IMAGE_NAME: "tofood/backend"
       CLUSTER_NAME: "tofood-cluster-back"  # Substitua pelo nome do seu cluster EKS
@@ -29,6 +30,7 @@ jobs:
         with:
           aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Passar o token de sessão
           aws-region: ${{ vars.AWS_REGION }}
 
       # Login no Amazon ECR

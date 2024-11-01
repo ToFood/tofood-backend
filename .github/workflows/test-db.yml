@@ -17,17 +17,35 @@ jobs:
       DB_MONGO_PASSWORD: ${{ secrets.DB_MONGO_PASSWORD }}
 
     steps:
-      - name: Instalar cliente MongoDB
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y mongodb-clients
+      - name: Fazer checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Altere para a versão do Node.js que você utiliza
+
+      - name: Instalar dependências
+        run: npm install mongodb
 
       - name: Testar conexão com o MongoDB
         run: |
-          echo "Testando conexão com o MongoDB..."
-          if mongo "mongodb://$DB_MONGO_USER:$DB_MONGO_PASSWORD@$DB_MONGO_HOST:$DB_MONGO_PORT/$DB_MONGO_NAME" --eval "db.stats()" > /dev/null 2>&1; then
-            echo "Conexão bem-sucedida com o banco de dados MongoDB!"
-          else
-            echo "::error:: Falha ao conectar ao banco de dados MongoDB. Verifique as credenciais e a configuração do banco."
-            exit 1
-          fi
+          node -e "
+          const { MongoClient } = require('mongodb');
+          const uri = \`mongodb://$DB_MONGO_USER:$DB_MONGO_PASSWORD@$DB_MONGO_HOST:$DB_MONGO_PORT/$DB_MONGO_NAME\`;
+          const client = new MongoClient(uri, { useUnifiedTopology: true });
+
+          async function run() {
+            try {
+              await client.connect();
+              console.log('Conexão bem-sucedida com o banco de dados MongoDB!');
+            } catch (error) {
+              console.error('::error:: Falha ao conectar ao banco de dados MongoDB:', error.message);
+              process.exit(1);
+            } finally {
+              await client.close();
+            }
+          }
+
+          run();
+          "

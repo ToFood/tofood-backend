@@ -16,9 +16,19 @@ jobs:
       - name: Exibir variáveis de ambiente do repositório
         run: |
           echo "=== Variáveis de ambiente do repositório ==="
-          printenv | grep -E 'DB_HOST|DB_NAME|DB_PORT|DB_USER|DOCKER_USERNAME|AWS_ACCESS_KEY_ID'
+          echo "DB_HOST: $DB_HOST"
+          echo "DB_NAME: $DB_NAME"
+          echo "DB_PORT: $DB_PORT"
+          echo "DB_USER: $DB_USER"
+          echo "DOCKER_USERNAME: $DOCKER_USERNAME"
+          echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
 
       - name: Exibir variáveis de ambiente da organização
         run: |
           echo "=== Variáveis de ambiente da organização ==="
-          printenv | grep -E 'DB_MONGO_HOST|DB_MONGO_NAME|DB_MONGO_PORT|DB_MONGO_USER|DOCKER_USERNAME|AWS_ACCESS_KEY_ID'
+          echo "DB_MONGO_HOST: $DB_MONGO_HOST"
+          echo "DB_MONGO_NAME: $DB_MONGO_NAME"
+          echo "DB_MONGO_PORT: $DB_MONGO_PORT"
+          echo "DB_MONGO_USER: $DB_MONGO_USER"
+          echo "DOCKER_USERNAME: $DOCKER_USERNAME"
+          echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"

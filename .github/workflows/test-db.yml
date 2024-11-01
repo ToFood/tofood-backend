@@ -31,7 +31,14 @@ jobs:
         run: |
           node -e "
           const { MongoClient } = require('mongodb');
-          const uri = \`mongodb+srv://${process.env.DB_MONGO_USER}:${process.env.DB_MONGO_PASSWORD}@${process.env.DB_MONGO_HOST}/${process.env.DB_MONGO_NAME}?retryWrites=true&w=majority\`;
+          const user = process.env.DB_MONGO_USER;
+          const password = process.env.DB_MONGO_PASSWORD;
+          const host = process.env.DB_MONGO_HOST;
+          const dbName = process.env.DB_MONGO_NAME;
+
+          const uri = 'mongodb+srv://' + user + ':' + password + '@' + host + '/' + dbName + '?retryWrites=true&w=majority';
+          console.log('Tentando conexão com a seguinte URI:', uri.replace(password, '****')); // Esconde a senha ao exibir
+
           const client = new MongoClient(uri, { useUnifiedTopology: true });
 
           async function run() {
@@ -40,6 +47,7 @@ jobs:
               console.log('Conexão bem-sucedida com o banco de dados MongoDB!');
             } catch (error) {
               console.error('::error:: Falha ao conectar ao banco de dados MongoDB:', error.message);
+              console.log('URI usada para tentativa de conexão:', uri);
               process.exit(1);
             } finally {
               await client.close();

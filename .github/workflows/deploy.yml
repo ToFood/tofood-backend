@@ -34,7 +34,7 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Passar o token de sessão
           aws-region: ${{ vars.AWS_REGION }}
 
-      # Criar cluster EKS se não existir
+            # Criar cluster EKS se não existir
       - name: 🛠️ Criar cluster EKS (se não existir)
         run: |
           if ! aws eks describe-cluster --name $CLUSTER_NAME --region $AWS_REGION; then
@@ -42,14 +42,15 @@ jobs:
             aws eks create-cluster \
               --name $CLUSTER_NAME \
               --region $AWS_REGION \
-              --kubernetes-version "1.21" \  # Substitua pela versão desejada
-              --role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/EKSClusterRole \  # Substitua pelo ARN da função de IAM para o cluster
-              --resources-vpc-config subnetIds=subnet-xxxxxx,subnet-yyyyyy,securityGroupIds=sg-zzzzzz;
+              --kubernetes-version "1.21" \
+              --role-arn arn:aws:iam::${AWS_ACCOUNT_ID}:role/EKSClusterRole \
+              --resources-vpc-config subnetIds=subnet-xxxxxx,subnet-yyyyyy,securityGroupIds=sg-zzzzzz
             echo "Cluster EKS criado. Aguardando a finalização da criação..."
             aws eks wait cluster-active --name $CLUSTER_NAME --region $AWS_REGION
           else
-            echo "Cluster EKS já existe.";
+            echo "Cluster EKS já existe."
           fi
+    
 
       # Criar NodeGroup se não existir
       - name: 🛠️ Criar NodeGroup (se não existir)

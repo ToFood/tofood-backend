@@ -1,7 +1,7 @@
 name: Test Database Connection
 
 on:
-  push:  # Dispara em qualquer commit em qualquer branch
+  push:
     branches:
       - '**'
 
@@ -10,10 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_MONGO_HOST: ${{ vars.DB_MONGO_HOST }}
-      DB_MONGO_NAME: ${{ vars.DB_MONGO_NAME }}
-      DB_MONGO_PORT: ${{ vars.DB_MONGO_PORT }}
-      DB_MONGO_USER: ${{ vars.DB_MONGO_USER }}
+      DB_MONGO_HOST: ${{ secrets.DB_MONGO_HOST }}
+      DB_MONGO_NAME: ${{ secrets.DB_MONGO_NAME }}
+      DB_MONGO_USER: ${{ secrets.DB_MONGO_USER }}
       DB_MONGO_PASSWORD: ${{ secrets.DB_MONGO_PASSWORD }}
 
     steps:
@@ -32,7 +31,7 @@ jobs:
         run: |
           node -e "
           const { MongoClient } = require('mongodb');
-          const uri = \`mongodb://$DB_MONGO_USER:$DB_MONGO_PASSWORD@$DB_MONGO_HOST:$DB_MONGO_PORT/$DB_MONGO_NAME\`;
+          const uri = \`mongodb+srv://${process.env.DB_MONGO_USER}:${process.env.DB_MONGO_PASSWORD}@${process.env.DB_MONGO_HOST}/${process.env.DB_MONGO_NAME}?retryWrites=true&w=majority\`;
           const client = new MongoClient(uri, { useUnifiedTopology: true });
 
           async function run() {

@@ -1,0 +1,68 @@
+name: Test Database Connection
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  test-db-connection:
+    runs-on: ubuntu-latest
+
+    env:
+      DB_MONGO_HOST: ${{ vars.DB_MONGO_HOST }}
+      DB_MONGO_NAME: ${{ vars.DB_MONGO_NAME }}
+      DB_MONGO_USER: ${{ vars.DB_MONGO_USER }}
+      DB_MONGO_PASSWORD: ${{ secrets.DB_MONGO_PASSWORD }}
+
+    steps:
+      - name: 🎨 Fazer checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 🚀 Instalar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'  # Altere para a versão do Node.js que você utiliza
+
+      - name: 📦 Instalar dependências
+        run: npm install mongodb
+
+      - name: Exibir variáveis de ambiente da organização
+        run: |
+          echo "=== Variáveis de ambiente da organização ==="
+          echo "DB_MONGO_HOST: $DB_MONGO_HOST"
+          echo "DB_MONGO_NAME: $DB_MONGO_NAME"
+          echo "DB_MONGO_PORT: $DB_MONGO_PORT"
+          echo "DB_MONGO_USER: $DB_MONGO_USER"
+
+      - name: Testar conexão com o MongoDB
+        run: |
+          node -e "
+          const { MongoClient } = require('mongodb');
+          const user = process.env.DB_MONGO_USER;
+          const password = process.env.DB_MONGO_PASSWORD;
+          const host = process.env.DB_MONGO_HOST;
+          const dbName = process.env.DB_MONGO_NAME;
+
+          const uri = 'mongodb+srv://' + user + ':' + password + '@' + host + '/' + dbName + '?retryWrites=true&w=majority';
+          console.log('🔍 Tentando conexão com a seguinte URI: ' + uri.replace(password, '****')); // Esconde a senha ao exibir
+
+          const client = new MongoClient(uri, { useUnifiedTopology: true });
+
+          async function run() {
+            try {
+              await client.connect();
+              console.log('✨🎉 Conexão bem-sucedida com o banco de dados MongoDB! 🎉✨');
+            } catch (error) {
+              console.error('❌ ::error:: Falha ao conectar ao banco de dados MongoDB:', error.message);
+              console.log('🚨 URI usada para tentativa de conexão:', uri);
+              console.log('⚠️ Verifique se as variáveis de ambiente estão corretas e a conectividade da rede. 🌐');
+              process.exit(1);
+            } finally {
+              await client.close();
+              console.log('🔒 Conexão fechada com segurança. 🔒');
+            }
+          }
+
+          run();
+          "

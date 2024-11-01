@@ -1,0 +1,24 @@
+name: Print Environment Variables
+
+on:
+  push:  # Dispara em qualquer commit em qualquer branch
+    branches:
+      - '**'
+
+jobs:
+  print-env-variables:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Fazer checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Exibir variáveis de ambiente do repositório
+        run: |
+          echo "=== Variáveis de ambiente do repositório ==="
+          printenv | grep -E 'DB_HOST|DB_NAME|DB_PORT|DB_USER|DOCKER_USERNAME|AWS_ACCESS_KEY_ID'
+
+      - name: Exibir variáveis de ambiente da organização
+        run: |
+          echo "=== Variáveis de ambiente da organização ==="
+          printenv | grep -E 'DB_MONGO_HOST|DB_MONGO_NAME|DB_MONGO_PORT|DB_MONGO_USER|DOCKER_USERNAME|AWS_ACCESS_KEY_ID'

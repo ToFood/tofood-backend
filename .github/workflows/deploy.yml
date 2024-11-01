@@ -34,7 +34,31 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}  # Passar o token de sessão
           aws-region: ${{ vars.AWS_REGION }}
 
-            # Criar cluster EKS se não existir
+      # Verificar e aplicar política de permissão se necessário
+      - name: 🔑 Verificar e aplicar política de permissão
+        run: |
+          POLICY_ARN="arn:aws:iam::${AWS_ACCOUNT_ID}:policy/CustomPutRolePolicyPermission"
+          if ! aws iam get-policy --policy-arn $POLICY_ARN 2>/dev/null; then
+            echo "Criando política personalizada para iam:PutRolePolicy..."
+            aws iam create-policy \
+              --policy-name CustomPutRolePolicyPermission \
+              --policy-document '{
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Action": "iam:PutRolePolicy",
+                    "Resource": "*"
+                  }
+                ]
+              }'
+          fi
+          echo "Anexando a política à role de execução..."
+          aws iam attach-role-policy \
+            --role-name GitHubActionsRole \
+            --policy-arn $POLICY_ARN
+
+      # Criar cluster EKS se não existir
       - name: 🛠️ Criar cluster EKS (se não existir)
         run: |
           if ! aws eks describe-cluster --name $CLUSTER_NAME --region $AWS_REGION; then
@@ -50,7 +74,6 @@ jobs:
           else
             echo "Cluster EKS já existe."
           fi
-    
 
       # Criar NodeGroup se não existir
       - name: 🛠️ Criar NodeGroup (se não existir)
@@ -60,8 +83,8 @@ jobs:
             aws eks create-nodegroup \
               --cluster-name $CLUSTER_NAME \
               --nodegroup-name $NODEGROUP_NAME \
-              --node-role arn:aws:iam::${AWS_ACCOUNT_ID}:role/EKSNodeRole \  # Substitua pelo ARN da função de IAM para o NodeGroup
-              --subnets subnet-xxxxxx subnet-yyyyyy \  # Substitua pelos IDs das subnets
+              --node-role arn:aws:iam::${AWS_ACCOUNT_ID}:role/EKSNodeRole \
+              --subnets subnet-xxxxxx subnet-yyyyyy \
               --scaling-config minSize=1,maxSize=3,desiredSize=2 \
               --instance-types t3.medium \
               --region $AWS_REGION;

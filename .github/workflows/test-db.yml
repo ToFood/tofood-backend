@@ -10,9 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      DB_MONGO_HOST: ${{ secrets.DB_MONGO_HOST }}
-      DB_MONGO_NAME: ${{ secrets.DB_MONGO_NAME }}
-      DB_MONGO_USER: ${{ secrets.DB_MONGO_USER }}
+      DB_MONGO_HOST: ${{ vars.DB_MONGO_HOST }}
+      DB_MONGO_NAME: ${{ vars.DB_MONGO_NAME }}
+      DB_MONGO_USER: ${{ vars.DB_MONGO_USER }}
       DB_MONGO_PASSWORD: ${{ secrets.DB_MONGO_PASSWORD }}
 
     steps:
@@ -26,6 +26,14 @@ jobs:
 
       - name: Instalar dependências
         run: npm install mongodb
+
+      - name: Exibir variáveis de ambiente da organização
+        run: |
+          echo "=== Variáveis de ambiente da organização ==="
+          echo "DB_MONGO_HOST: $DB_MONGO_HOST"
+          echo "DB_MONGO_NAME: $DB_MONGO_NAME"
+          echo "DB_MONGO_PORT: $DB_MONGO_PORT"
+          echo "DB_MONGO_USER: $DB_MONGO_USER"
 
       - name: Testar conexão com o MongoDB
         run: |

@@ -16,15 +16,15 @@ jobs:
       DB_MONGO_PASSWORD: ${{ secrets.DB_MONGO_PASSWORD }}
 
     steps:
-      - name: Fazer checkout do repositório
+      - name: 🎨 Fazer checkout do repositório
         uses: actions/checkout@v4
 
-      - name: Instalar Node.js
+      - name: 🚀 Instalar Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16'  # Altere para a versão do Node.js que você utiliza
 
-      - name: Instalar dependências
+      - name: 📦 Instalar dependências
         run: npm install mongodb
 
       - name: Exibir variáveis de ambiente da organização
@@ -45,20 +45,22 @@ jobs:
           const dbName = process.env.DB_MONGO_NAME;
 
           const uri = 'mongodb+srv://' + user + ':' + password + '@' + host + '/' + dbName + '?retryWrites=true&w=majority';
-          console.log('Tentando conexão com a seguinte URI:', uri.replace(password, '****')); // Esconde a senha ao exibir
+          console.log('🔍 Tentando conexão com a seguinte URI: ' + uri.replace(password, '****')); // Esconde a senha ao exibir
 
           const client = new MongoClient(uri, { useUnifiedTopology: true });
 
           async function run() {
             try {
               await client.connect();
-              console.log('Conexão bem-sucedida com o banco de dados MongoDB!');
+              console.log('✨🎉 Conexão bem-sucedida com o banco de dados MongoDB! 🎉✨');
             } catch (error) {
-              console.error('::error:: Falha ao conectar ao banco de dados MongoDB:', error.message);
-              console.log('URI usada para tentativa de conexão:', uri);
+              console.error('❌ ::error:: Falha ao conectar ao banco de dados MongoDB:', error.message);
+              console.log('🚨 URI usada para tentativa de conexão:', uri);
+              console.log('⚠️ Verifique se as variáveis de ambiente estão corretas e a conectividade da rede. 🌐');
               process.exit(1);
             } finally {
               await client.close();
+              console.log('🔒 Conexão fechada com segurança. 🔒');
             }
           }
 

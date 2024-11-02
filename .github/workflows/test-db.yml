@@ -1,12 +1,12 @@
-name: Test Database Connection
+name: Test Database MongoDB
 
 on:
-  push:
+  pull_request:
     branches:
-      - '**'
+      - "main"
 
 jobs:
-  test-db-connection:
+  mongodb-test:
     runs-on: ubuntu-latest
 
     env:
@@ -22,7 +22,7 @@ jobs:
       - name: 🚀 Instalar Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'  # Altere para a versão do Node.js que você utiliza
+          node-version: "16" # Altere para a versão do Node.js que você utiliza
 
       - name: 📦 Instalar dependências
         run: npm install mongodb

@@ -1,19 +1,19 @@
-name: Build and Push Docker Image to Docker Hub
+name: Test Docker Image
 
 on:
-  push:
+  pull_request:
     branches:
-      - '**'
+      - "main"
 
 jobs:
-  build-and-push:
+  docker-build:
     runs-on: ubuntu-latest
 
     env:
       DOCKER_REGISTRY: "docker.io"
       DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      IMAGE_NAME: "tofood/backend"  # Nome da sua imagem no Docker Hub
+      IMAGE_NAME: "tofood/backend" # Nome da sua imagem no Docker Hub
 
     steps:
       - name: 🎨 Fazer checkout do repositório
@@ -31,10 +31,10 @@ jobs:
         run: |
           docker tag $DOCKER_REGISTRY/$IMAGE_NAME:latest $DOCKER_REGISTRY/$IMAGE_NAME:${{ github.sha }}
 
-      - name: 📤 Push da imagem Docker
-        run: |
-          docker push $DOCKER_REGISTRY/$IMAGE_NAME:latest
-          docker push $DOCKER_REGISTRY/$IMAGE_NAME:${{ github.sha }}
+      #- name: 📤 Push da imagem Docker
+      #  run: |
+      #    docker push $DOCKER_REGISTRY/$IMAGE_NAME:latest
+      #    docker push $DOCKER_REGISTRY/$IMAGE_NAME:${{ github.sha }}
 
       - name: ✅ Logout do Docker
         run: |

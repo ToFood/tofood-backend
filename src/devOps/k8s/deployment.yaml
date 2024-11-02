@@ -14,40 +14,58 @@ spec:
       labels:
         app: tofood
     spec:
+      automountServiceAccountToken: false # Desativa a montagem automática do token da conta de serviço
       containers:
-      - name: tofood-container
-        image: tofood/backend:latest  # Atualizado para usar a nova imagem do tofood
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 80
-        resources:
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 10
-          periodSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 80
-          initialDelaySeconds: 5
-          periodSeconds: 5
-        env:
-          - name: NODE_ENV
-            value: "production"
-      restartPolicy: Always
+        - name: tofood-container
+          image: tofood/backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          env:
+            - name: NODE_ENV
+              value: "production"
+          volumeMounts:
+            - name: storage-volume
+              mountPath: /data
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
+      volumes:
+        - name: storage-volume
+          persistentVolumeClaim:
+            claimName: tofood-pvc
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxUnavailable: 1
       maxSurge: 1
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tofood-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi # Ajuste o tamanho conforme suas necessidades

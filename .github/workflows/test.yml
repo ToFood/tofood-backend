@@ -78,7 +78,8 @@ jobs:
   aws_test_connection:
     name: 📦 Teste de Conexão com AWS
     runs-on: ubuntu-latest
-    needs: [lint]
+    needs: [test, lint]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: 🎨 Fazer checkout do repositório
@@ -173,9 +174,9 @@ jobs:
       - name: ✅ Logout do Docker
         run: docker logout $DOCKER_REGISTRY
 
-  # Job para Continuar no PR ou no Deploy
-  continue_or_deploy:
-    name: 🤖 Status do PR
+  # Job para mensagem de PR sucesso
+  pr_status:
+    name: 👍🏼 Status do PR
     runs-on: ubuntu-latest
     needs: [mongodb_test, docker_build_test]
     if: github.event_name == 'pull_request'
@@ -189,7 +190,7 @@ jobs:
   setup:
     name: 🛜 Estabelecendo conexão com AWS
     runs-on: ubuntu-latest
-    needs: [lint]
+    needs: [test, lint, aws_test_connection]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:

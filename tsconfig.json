@@ -2,15 +2,17 @@
   "compilerOptions": {
     "target": "es2016",
     "module": "commonjs",
-    "outDir": "build",
-    "rootDir": "src",
+    "outDir": "./build", // Mantido para referência, mas não será usado com `noEmit`
+    "rootDir": "./src",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": false,
     "skipLibCheck": true,
-    "lib": ["es6"]
+    "lib": ["es6"],
+    "noEmit": true // Impede a geração de arquivos na pasta `build`
   },
-  "include": ["src/**/*.ts", "src/**/*.json"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "**/*.test.ts", "src/configs"]
 }

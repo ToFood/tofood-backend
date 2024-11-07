@@ -5,7 +5,7 @@ Projeto em desenvolvimento conforme progresso da pós-graduação da FIAP - Soft
 ## Membros:
 
 - Leonardo de Almeida Ferreira [rm353533]
-- Robert Alves do Anjos [rm353529] 
+- Robert Alves do Anjos [rm353529]
   <br /><br />
 
 ## Links
@@ -14,7 +14,7 @@ Projeto em desenvolvimento conforme progresso da pós-graduação da FIAP - Soft
 - [SWAGGER] : http://localhost:2019/swagger/
 - [NOTION] : https://www.notion.so/FAST-FOOD-SYSTEM-f96fe451104340b29864b4611d3e348c
 - [MIRO] : https://miro.com/welcomeonboard/bmxDZjE3SGdwYXVHTGpRT0MxMVgyU1gwNUZjNUliODluM1BIRnkxUjhKMXp0SzNNY3dhWkI2WnhCWmxoNnBHUnwzNDU4NzY0NTg1NDEwMDQzNjMyfDI=?share_link_id=781584269137
-- [DOCKER IMAGE] : https://hub.docker.com/r/leonardo10sp/tech-challenge
+- [DOCKER IMAGE] : https://hub.docker.com/r/leonardo10sp/tofood
 - [POSTMAN INVITE] : https://app.getpostman.com/join-team?invite_code=fbd076935fee97ec62555f1837032175&target_code=ee3d3de9b5097fa6b0cf8d1f6e3a59ca
 
 <br />
@@ -196,7 +196,7 @@ Certifique-se de ter as seguintes ferramentas instaladas:
      (opcionais)
 
    - kubectl get pods
-   - minikube service tech-challenge-service --url
+   - minikube service tofood-service --url
 
 ### Instalação e Configuração do AWS
 
@@ -239,11 +239,11 @@ Default output format: json
 
 ## Criando clusters
 
-eksctl create cluster --name tech-challenge-cluster --region us-east-1 --nodes 3
+eksctl create cluster --name tofood-cluster --region us-east-1 --nodes 3
 
 ## Atualizando clusters
 
-aws eks --region us-east-1 update-kubeconfig --name tech-challenge-cluster
+aws eks --region us-east-1 update-kubeconfig --name tofood-cluster
 
 ## Por fim, na raiz do projeto
 

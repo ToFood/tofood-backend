@@ -175,19 +175,15 @@ jobs:
 
   # Job para Continuar no PR ou no Deploy
   continue_or_deploy:
-    name: 🏁 Status do PR
+    name: 🤖 Status do PR
     runs-on: ubuntu-latest
     needs: [mongodb_test, docker_build_test]
     if: github.event_name == 'pull_request'
 
     steps:
-      - name: ⏳
+      - name: Aprovação do PR
         run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "Todos os testes passaram. Pipeline concluído para o PR ✅."
-            exit 0  # Para o fluxo ao finalizar o PR
-          else
-            echo "Iniciando fluxo de deploy para o merge na branch main."
+          echo "Todos os testes passaram. Pipeline concluído PR aprovado ✅."
 
   # Job de Configuração Inicial para Deploy (somente em merges para main)
   setup:

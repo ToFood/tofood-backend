@@ -155,7 +155,7 @@ jobs:
   ecr_setup:
     name: 🤖 Provisionando ECR
     runs-on: ubuntu-latest
-    needs: setup
+    needs: setup # Roda após o sucesso do setup
 
     steps:
       - name: 🛠️ Criar repositório ECR (se não existir)
@@ -171,7 +171,7 @@ jobs:
   docker_build_push:
     name: 🐋 Docker - Build & Push
     runs-on: ubuntu-latest
-    needs: ecr_setup
+    needs: [ecr_setup, eks_infrastructure]
 
     steps:
       - name: 🛠️ Build da imagem Docker
@@ -192,7 +192,6 @@ jobs:
     name: 🚀 Deploy
     runs-on: ubuntu-latest
     needs: [eks_infrastructure, docker_build_push]
-
     steps:
       - name: ⚙️ Configurar kubectl
         run: |

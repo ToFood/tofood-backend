@@ -178,9 +178,10 @@ jobs:
     name: 🏁 Status do PR
     runs-on: ubuntu-latest
     needs: [mongodb_test, docker_build_test]
+    if: github.event_name == 'pull_request'
 
     steps:
-      - name: ⏳ Verificando...
+      - name: ⏳
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             echo "Todos os testes passaram. Pipeline concluído para o PR ✅."

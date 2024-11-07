@@ -120,7 +120,7 @@ jobs:
   mongodb_test:
     name: 🗄️ Teste de Conexão com MongoDB
     runs-on: ubuntu-latest
-    needs: [lint]
+    needs: [test, lint]
 
     steps:
       - name: 🎨 Fazer checkout do repositório
@@ -156,7 +156,7 @@ jobs:
   docker_build_test:
     name: 🐋 Teste de Build da Imagem Docker
     runs-on: ubuntu-latest
-    needs: [lint]
+    needs: [test, lint]
     if: github.event_name == 'pull_request'
 
     steps:
@@ -176,7 +176,7 @@ jobs:
 
   # Job para mensagem de PR sucesso
   pr_status:
-    name: 👍🏼 Status do PR
+    name: ✅ Tudo certo!
     runs-on: ubuntu-latest
     needs: [mongodb_test, docker_build_test]
     if: github.event_name == 'pull_request'

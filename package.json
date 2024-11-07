@@ -7,12 +7,11 @@
   "scripts": {
     "test": "jest",
     "type-check": "tsc",
-    "build": "rimraf src && tsc --noEmit false && tsc-alias",
+    "build": "rimraf build && tsc --noEmit false && tsc-alias",
     "start": "node src/server.js",
     "dev": "cross-env NODE_ENV=development tsx watch src/server",
     "swagger": "tsoa spec"
   },
-  
   "keywords": [],
   "author": "",
   "license": "ISC",

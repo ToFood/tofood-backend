@@ -35,16 +35,47 @@ jobs:
         run: |
           npm run build
 
-      - name: ✅ Verificar erros de build e lint
+  # Job de Lint
+  lint:
+    name: Lint - Validação do Código
+    runs-on: ubuntu-latest
+    needs: build_project # Roda após o sucesso do build_project
+
+    steps:
+      - name: 🎨 Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 📦 Instalar dependências
+        run: |
+          npm install
+
+      - name: 🔍 Rodar Lint
         run: |
           npm run lint
+
+  # Job de Teste
+  test:
+    name: Testes da Aplicação
+    runs-on: ubuntu-latest
+    needs: build_project # Roda após o sucesso do build_project
+
+    steps:
+      - name: 🎨 Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 📦 Instalar dependências
+        run: |
+          npm install
+
+      - name: 🧪 Executar Testes
+        run: |
           npm test
 
   # Job de Configuração Inicial
   setup:
-    name: Configuração Inicial
+    name: Estabelecendo conexão com AWS
     runs-on: ubuntu-latest
-    needs: build_project
+    needs: [lint, test] # Roda após o sucesso dos jobs de lint e test
 
     steps:
       - name: 🎨 Checkout do repositório
@@ -60,7 +91,7 @@ jobs:
 
   # Job de Infraestrutura EKS
   eks_infrastructure:
-    name: Gerenciamento da Infraestrutura EKS
+    name: Provisionando EKS
     runs-on: ubuntu-latest
     needs: setup
 
@@ -120,9 +151,9 @@ jobs:
             echo "NodeGroup já existe."
           fi
 
-  # Job de Criação do Repositório ECR
+  # Job de Configuração do ECR
   ecr_setup:
-    name: Configuração do ECR
+    name: Configurando ECR
     runs-on: ubuntu-latest
     needs: setup
 
@@ -158,7 +189,7 @@ jobs:
 
   # Job de Deploy no EKS
   eks_deploy:
-    name: Deploy no EKS
+    name: Deploy
     runs-on: ubuntu-latest
     needs: [eks_infrastructure, docker_build_push]
 

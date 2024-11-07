@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: 🐈‍⬛ CI/CD Pipeline
 
 on:
   push:
@@ -184,7 +184,7 @@ jobs:
     steps:
       - name: Aprovação do PR
         run: |
-          echo "Todos os testes passaram. Pipeline concluído PR aprovado ✅."
+          echo -e "Pipeline concluído, todos os testes passaram, mandou bem ${{ github.actor }}! 🦾 \nPR aprovado ✅."
 
   # Job de Configuração Inicial para Deploy (somente em merges para main)
   setup:

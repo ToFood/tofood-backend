@@ -1,28 +1,173 @@
-name: Run Test Aplication
+name: CI/CD Pipeline
 
-# Disparar o workflow quando ocorrer um push ou pull request na branch main
 on:
   pull_request:
+    branches:
+      - "*"
+
+env:
+  AWS_REGION: ${{ vars.AWS_REGION }}
+  AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+  DB_MONGO_HOST: ${{ vars.DB_MONGO_HOST }}
+  DB_MONGO_NAME: ${{ vars.DB_MONGO_NAME }}
+  DB_MONGO_USER: ${{ vars.DB_MONGO_USER }}
+  DB_MONGO_PASSWORD: ${{ secrets.DB_MONGO_PASSWORD }}
+  DOCKER_REGISTRY: "docker.io"
+  DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
+  DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  IMAGE_NAME: "tofood/backend"
 
 jobs:
-  aplication-test:
+  # Job de Build do Projeto Node/TypeScript
+  build_project:
+    name: 🛠️ Build do Projeto
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Fazer checkout do repositório
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: 🎨 Checkout do repositório
+        uses: actions/checkout@v4
 
-      # Step 2: Configurar Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-
-      # Step 3: Instalar dependências
-      - name: Install dependencies
+      - name: 📦 Instalar dependências
         run: npm install
 
-      # Step 4: Executar os testes do UserTest.ts
-      - name: Run UserTest
-        run: npx jest src/tests/UserTest.ts
+      - name: 🛠️ Build do projeto
+        run: npm run build
+
+  # Job de Teste
+  test:
+    name: 🧪 Testes da Aplicação
+    runs-on: ubuntu-latest
+    needs: build_project # Executa após o sucesso do build_project
+
+    steps:
+      - name: 🎨 Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 📦 Instalar dependências
+        run: npm install
+
+      - name: 🧪 Executar Testes
+        run: npm test
+
+  # Job de Lint
+  lint:
+    name: 🎨 Lint - Validação do Código
+    runs-on: ubuntu-latest
+    needs: build_project # Executa após o sucesso do build_project
+
+    steps:
+      - name: 🎨 Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 📦 Instalar dependências
+        run: npm install
+
+      - name: 🔍 Rodar Lint
+        run: npm run lint
+
+  # Job para Testar Conexão com AWS
+  aws_test_connection:
+    name: 🔗 Teste de Conexão com AWS
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+
+    steps:
+      - name: 🎨 Fazer checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 🚀 Instalar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: 📦 Instalar dependências
+        run: npm install aws-sdk
+
+      - name: 🔗 Testar conexão com a AWS
+        run: |
+          node -e "
+          const AWS = require('aws-sdk');
+          AWS.config.update({
+            region: process.env.AWS_REGION,
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            sessionToken: process.env.AWS_SESSION_TOKEN
+          });
+          async function testConnection() {
+            try {
+              const s3 = new AWS.S3();
+              const result = await s3.listBuckets().promise();
+              console.log('✨ Conexão bem-sucedida com a AWS! Buckets:', result.Buckets.map(bucket => bucket.Name).join(', '));
+            } catch (error) {
+              console.error('❌ Falha ao conectar à AWS:', error.message);
+              process.exit(1);
+            }
+          }
+          testConnection();
+          "
+
+  # Job para Testar Conexão com MongoDB
+  mongodb_test:
+    name: 🗄️ Teste de Conexão com MongoDB
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+
+    steps:
+      - name: 🎨 Fazer checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 🚀 Instalar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: 📦 Instalar dependências
+        run: npm install mongodb
+
+      - name: Testar conexão com o MongoDB
+        run: |
+          node -e "
+          const { MongoClient } = require('mongodb');
+          const uri = 'mongodb+srv://' + process.env.DB_MONGO_USER + ':' + process.env.DB_MONGO_PASSWORD + '@' + process.env.DB_MONGO_HOST + '/' + process.env.DB_MONGO_NAME + '?retryWrites=true&w=majority';
+          console.log('🔍 Tentando conexão com a URI:', uri.replace(process.env.DB_MONGO_PASSWORD, '****'));
+          const client = new MongoClient(uri, { useUnifiedTopology: true });
+          async function run() {
+            try {
+              await client.connect();
+              console.log('✨ Conexão bem-sucedida com o MongoDB!');
+            } catch (error) {
+              console.error('❌ Falha ao conectar ao MongoDB:', error.message);
+              process.exit(1);
+            } finally {
+              await client.close();
+            }
+          }
+          run();
+          "
+
+  # Job para Testar Build da Imagem Docker
+  docker_build_test:
+    name: 🐋 Teste de Build da Imagem Docker
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+
+    steps:
+      - name: 🎨 Fazer checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 🐋 Login no Docker Hub
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u "$DOCKER_USERNAME" --password-stdin
+
+      - name: 🛠️ Build da imagem Docker
+        run: |
+          docker build -t $DOCKER_REGISTRY/$IMAGE_NAME:latest .
+
+      - name: 🏷️ Tag da imagem
+        run: |
+          docker tag $DOCKER_REGISTRY/$IMAGE_NAME:latest $DOCKER_REGISTRY/$IMAGE_NAME:${{ github.sha }}
+
+      - name: ✅ Logout do Docker
+        run: docker logout $DOCKER_REGISTRY

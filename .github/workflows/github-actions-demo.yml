@@ -16,4 +16,4 @@ jobs:
         run: |
           echo "🗂️ Listando os arquivos do repositório:"
           ls ${{ github.workspace }}
-      - run: echo "🍏 Status final do job: ${{ job.status }}. Excelente trabalho! 🚀"
+      - run: "echo 🍏 Status final do job: ${{ job.status }}. Excelente trabalho! 🚀"

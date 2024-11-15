@@ -1,6 +1,9 @@
 node_modules
 npm-debug.log
-.env
-.DS_Store
+Dockerfile
+.dockerignore
 .git
+.env
+uploads
 .vscode
+.DS_Store

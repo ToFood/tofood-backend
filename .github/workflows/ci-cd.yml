@@ -56,7 +56,7 @@ jobs:
         run: npm install
 
       - name: 🧪 Executar Testes
-        #run: npm test 
+        #run: npm test
         run: npm test -- src/tests/UserTest.ts
 
   # Job de Lint
@@ -236,14 +236,29 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
+      # Passo de checkout para clonar o repositório
+      - name: Checkout do código
+        uses: actions/checkout@v2
+
+      # Login no Amazon ECR (caso necessário)
+      - name: Login no Amazon ECR
+        env:
+          AWS_REGION: $AWS_REGION
+          AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+      # Construção da imagem Docker (sem especificar -f docker/Dockerfile)
       - name: 🛠️ Build da imagem Docker
         run: |
           docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest .
 
+      # Tag da imagem com o SHA do commit
       - name: 🏷️ Tag da imagem
         run: |
           docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:${{ github.sha }}
 
+      # Push da imagem para o repositório ECR
       - name: 📤 Push da imagem Docker
         run: |
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest

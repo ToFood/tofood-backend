@@ -174,7 +174,6 @@ jobs:
       - name: ✅ Logout do Docker
         run: docker logout $DOCKER_REGISTRY
 
-
   # Job para mensagem de PR sucesso
   pr_status:
     name: ✅ Tudo certo!
@@ -249,10 +248,10 @@ jobs:
         run: |
           aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
-      # Construção da imagem Docker (sem especificar -f docker/Dockerfile)
+      # Construção da imagem Docker
       - name: 🛠️ Build da imagem Docker
         run: |
-          docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest -f docker/Dockerfile .
+          docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest .
 
       # Tag da imagem com o SHA do commit
       - name: 🏷️ Tag da imagem

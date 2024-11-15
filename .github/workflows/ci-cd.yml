@@ -78,7 +78,7 @@ jobs:
   aws_test_connection:
     name: 📦 Teste de Conexão com AWS
     runs-on: ubuntu-latest
-    needs: [test, lint]
+    needs: [lint]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:

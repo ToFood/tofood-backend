@@ -245,6 +245,12 @@ jobs:
         run: |
           aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
+      # Verificar e Criar Repositório ECR, se necessário
+      - name: Verificar e Criar Repositório ECR
+        run: |
+          aws ecr describe-repositories --repository-names "$IMAGE_NAME" --region $AWS_REGION || \
+          aws ecr create-repository --repository-name "$IMAGE_NAME" --region $AWS_REGION
+
       # Construção da imagem Docker
       - name: 🛠️ Build da imagem Docker
         run: |

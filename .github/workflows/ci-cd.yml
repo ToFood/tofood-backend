@@ -21,7 +21,7 @@ env:
   DOCKER_REGISTRY: "docker.io"
   DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  IMAGE_NAME: "tofood/backend"
+  IMAGE_NAME: "tofood-backend"
   CLUSTER_NAME: "tofood-eks-cluster"
   DEPLOYMENT_NAME: "tofood-deployment"
   NODEGROUP_NAME: "tofood-nodegroup"
@@ -204,7 +204,7 @@ jobs:
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-  # Job de Infraestrutura EKS para Deploy
+    # Job de Infraestrutura EKS para Deploy
   eks_infrastructure:
     name: 🏗️ Provisionando EKS
     runs-on: ubuntu-latest
@@ -212,9 +212,34 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - name: 🛠️ Criar cluster EKS (se não existir)
+      - name: Verificar se o cluster EKS existe
         run: |
-          # Configura e provisiona o cluster EKS se necessário
+          aws eks describe-cluster --name $CLUSTER_NAME --region $AWS_REGION || \
+          aws eks create-cluster --name $CLUSTER_NAME --region $AWS_REGION \
+            --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/EKSClusterRole \
+            --resources-vpc-config subnetIds=subnet-xxxxxxx,subnet-yyyyyyy,securityGroupIds=sg-zzzzzzz
+
+      - name: Aguardar o cluster EKS ficar ativo
+        run: |
+          aws eks wait cluster-active --name $CLUSTER_NAME --region $AWS_REGION
+
+      - name: Criar Node Group para o cluster (se não existir)
+        run: |
+          aws eks describe-nodegroup --cluster-name $CLUSTER_NAME --nodegroup-name $NODEGROUP_NAME --region $AWS_REGION || \
+          aws eks create-nodegroup --cluster-name $CLUSTER_NAME --nodegroup-name $NODEGROUP_NAME \
+            --subnets subnet-xxxxxxx subnet-yyyyyyy \
+            --node-role arn:aws:iam::$AWS_ACCOUNT_ID:role/EKSNodeRole \
+            --scaling-config minSize=1,maxSize=3,desiredSize=2 \
+            --instance-types t3.medium \
+            --ami-type AL2_x86_64
+
+      - name: Aguardar Node Group ficar ativo
+        run: |
+          aws eks wait nodegroup-active --cluster-name $CLUSTER_NAME --nodegroup-name $NODEGROUP_NAME --region $AWS_REGION
+
+      - name: Configurar o kubectl
+        run: |
+          aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
   # Job de Configuração do ECR para Deploy
   ecr_setup:
@@ -224,9 +249,10 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - name: 🛠️ Criar repositório ECR (se não existir)
+      - name: Verificar e Criar Repositório ECR (se necessário)
         run: |
-          # Configura e provisiona o repositório ECR
+          aws ecr describe-repositories --repository-names "$IMAGE_NAME" --region $AWS_REGION || \
+          aws ecr create-repository --repository-name "$IMAGE_NAME" --region $AWS_REGION
 
   # Job de Build e Push da Imagem Docker
   docker_build_push:

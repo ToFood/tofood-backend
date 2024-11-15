@@ -238,13 +238,10 @@ jobs:
     steps:
       # Passo de checkout para clonar o repositório
       - name: Checkout do código
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # Login no Amazon ECR (caso necessário)
       - name: Login no Amazon ECR
-        env:
-          AWS_REGION: $AWS_REGION
-          AWS_ACCOUNT_ID: $AWS_ACCOUNT_ID
         run: |
           aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 

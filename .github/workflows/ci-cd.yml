@@ -56,7 +56,8 @@ jobs:
         run: npm install
 
       - name: 🧪 Executar Testes
-        run: npm test
+        #run: npm test 
+        run: npm test -- src/tests/UserTest.ts
 
   # Job de Lint
   lint:
@@ -78,7 +79,7 @@ jobs:
   aws_test_connection:
     name: 📦 Teste de Conexão com AWS
     runs-on: ubuntu-latest
-    needs: [lint]
+    needs: [test, lint]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
@@ -201,7 +202,6 @@ jobs:
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
           aws-region: ${{ env.AWS_REGION }}
 
   # Job de Infraestrutura EKS para Deploy

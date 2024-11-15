@@ -204,7 +204,7 @@ jobs:
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-    # Job de Infraestrutura EKS para Deploy
+  # Job de Infraestrutura EKS para Deploy
   eks_infrastructure:
     name: 🏗️ Provisionando EKS
     runs-on: ubuntu-latest
@@ -212,22 +212,22 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - name: Verificar se o cluster EKS existe
+      - name: Verificar se o cluster EKS existe e criar se necessário
         run: |
           aws eks describe-cluster --name $CLUSTER_NAME --region $AWS_REGION || \
           aws eks create-cluster --name $CLUSTER_NAME --region $AWS_REGION \
             --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/EKSClusterRole \
-            --resources-vpc-config subnetIds=subnet-xxxxxxx,subnet-yyyyyyy,securityGroupIds=sg-zzzzzzz
+            --resources-vpc-config subnetIds=subnet-VALID_SUBNET_ID1,subnet-VALID_SUBNET_ID2,securityGroupIds=sg-VALID_SG_ID
 
       - name: Aguardar o cluster EKS ficar ativo
         run: |
           aws eks wait cluster-active --name $CLUSTER_NAME --region $AWS_REGION
 
-      - name: Criar Node Group para o cluster (se não existir)
+      - name: Criar Node Group (se não existir)
         run: |
           aws eks describe-nodegroup --cluster-name $CLUSTER_NAME --nodegroup-name $NODEGROUP_NAME --region $AWS_REGION || \
           aws eks create-nodegroup --cluster-name $CLUSTER_NAME --nodegroup-name $NODEGROUP_NAME \
-            --subnets subnet-xxxxxxx subnet-yyyyyyy \
+            --subnets subnet-VALID_SUBNET_ID1 subnet-VALID_SUBNET_ID2 \
             --node-role arn:aws:iam::$AWS_ACCOUNT_ID:role/EKSNodeRole \
             --scaling-config minSize=1,maxSize=3,desiredSize=2 \
             --instance-types t3.medium \
@@ -237,7 +237,7 @@ jobs:
         run: |
           aws eks wait nodegroup-active --cluster-name $CLUSTER_NAME --nodegroup-name $NODEGROUP_NAME --region $AWS_REGION
 
-      - name: Configurar o kubectl
+      - name: Configurar kubectl
         run: |
           aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
 
@@ -258,7 +258,7 @@ jobs:
   docker_build_push:
     name: 🐋 Docker - Build & Push
     runs-on: ubuntu-latest
-    needs: [ecr_setup, eks_infrastructure]
+    needs: [ecr_setup]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
@@ -277,21 +277,34 @@ jobs:
           aws ecr describe-repositories --repository-names "$IMAGE_NAME" --region $AWS_REGION || \
           aws ecr create-repository --repository-name "$IMAGE_NAME" --region $AWS_REGION
 
+      # Login no Docker Hub
+      - name: Login no Docker Hub
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u "$DOCKER_USERNAME" --password-stdin
+
       # Construção da imagem Docker
       - name: 🛠️ Build da imagem Docker
         run: |
           docker build -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest .
+          docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest $DOCKER_REGISTRY/$IMAGE_NAME:latest
 
       # Tag da imagem com o SHA do commit
       - name: 🏷️ Tag da imagem
         run: |
           docker tag $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:${{ github.sha }}
+          docker tag $DOCKER_REGISTRY/$IMAGE_NAME:latest $DOCKER_REGISTRY/$IMAGE_NAME:${{ github.sha }}
 
       # Push da imagem para o repositório ECR
-      - name: 📤 Push da imagem Docker
+      - name: 📤 Push da imagem para Amazon ECR
         run: |
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:${{ github.sha }}
+
+      # Push da imagem para o Docker Hub
+      - name: 📤 Push da imagem para Docker Hub
+        run: |
+          docker push $DOCKER_REGISTRY/$IMAGE_NAME:latest
+          docker push $DOCKER_REGISTRY/$IMAGE_NAME:${{ github.sha }}
 
   # Job de Deploy no EKS
   eks_deploy:

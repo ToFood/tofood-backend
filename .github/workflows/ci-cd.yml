@@ -212,12 +212,14 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-      - name: Verificar se o cluster EKS existe e criar se necessário
+      - name: Verificar se o cluster EKS existe
         run: |
-          aws eks describe-cluster --name $CLUSTER_NAME --region $AWS_REGION || \
-          aws eks create-cluster --name $CLUSTER_NAME --region $AWS_REGION \
-            --role-arn arn:aws:iam::$AWS_ACCOUNT_ID:role/EKSClusterRole \
-            --resources-vpc-config subnetIds=subnet-VALID_SUBNET_ID1,subnet-VALID_SUBNET_ID2,securityGroupIds=sg-VALID_SG_ID
+          if ! aws eks describe-cluster --name $CLUSTER_NAME --region $AWS_REGION > /dev/null 2>&1; then
+            echo "❌ O cluster EKS com o nome '$CLUSTER_NAME' não existe."
+            echo "➡️  Por favor, provisione a infraestrutura rodando o pipeline no repositório de infra:"
+            echo "➡️  https://github.com/ToFood/tofood-infra-kubernetes"
+            exit 1
+          fi
 
       - name: Aguardar o cluster EKS ficar ativo
         run: |
@@ -225,13 +227,15 @@ jobs:
 
       - name: Criar Node Group (se não existir)
         run: |
-          aws eks describe-nodegroup --cluster-name $CLUSTER_NAME --nodegroup-name $NODEGROUP_NAME --region $AWS_REGION || \
-          aws eks create-nodegroup --cluster-name $CLUSTER_NAME --nodegroup-name $NODEGROUP_NAME \
-            --subnets subnet-VALID_SUBNET_ID1 subnet-VALID_SUBNET_ID2 \
-            --node-role arn:aws:iam::$AWS_ACCOUNT_ID:role/EKSNodeRole \
-            --scaling-config minSize=1,maxSize=3,desiredSize=2 \
-            --instance-types t3.medium \
-            --ami-type AL2_x86_64
+          if ! aws eks describe-nodegroup --cluster-name $CLUSTER_NAME --nodegroup-name $NODEGROUP_NAME --region $AWS_REGION > /dev/null 2>&1; then
+            echo "🔍 Node Group '$NODEGROUP_NAME' não encontrado. Criando..."
+            aws eks create-nodegroup --cluster-name $CLUSTER_NAME --nodegroup-name $NODEGROUP_NAME \
+              --subnets subnet-VALID_SUBNET_ID1 subnet-VALID_SUBNET_ID2 \
+              --node-role arn:aws:iam::$AWS_ACCOUNT_ID:role/EKSNodeRole \
+              --scaling-config minSize=1,maxSize=3,desiredSize=2 \
+              --instance-types t3.medium \
+              --ami-type AL2_x86_64
+          fi
 
       - name: Aguardar Node Group ficar ativo
         run: |
@@ -258,7 +262,7 @@ jobs:
   docker_build_push:
     name: 🐋 Docker - Build & Push
     runs-on: ubuntu-latest
-    needs: [ecr_setup]
+    needs: [ecr_setup, eks_infrastructure]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:

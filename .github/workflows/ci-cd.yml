@@ -23,7 +23,7 @@ env:
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   IMAGE_NAME: "tofood/backend"
   CLUSTER_NAME: "tofood-eks-cluster"
-  DEPLOYMENT_NAME: "tofood-deployment"
+  DEPLOYMENT_NAME: "tofood-app"
   NODEGROUP_NAME: "tofood-nodegroup"
 
 jobs:

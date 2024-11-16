@@ -17,7 +17,7 @@ spec:
       automountServiceAccountToken: false # Desativa a montagem automática do token da conta de serviço
       containers:
         - name: tofood-container
-          image: tofood/backend:latest
+          image: AKIAQQABDPONQ3T7KOOJ.dkr.ecr.us-east-1.amazonaws.com/tofood/backend:latest 
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -69,3 +69,20 @@ spec:
   resources:
     requests:
       storage: 1Gi # Ajuste o tamanho conforme suas necessidades
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tofood-service
+  labels:
+    app: tofood
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb" # Network Load Balancer
+spec:
+  selector:
+    app: tofood
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer

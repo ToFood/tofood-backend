@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Run Pull Request Analysis
+      - name: 🐈‍⬛ Run Pull Request Analysis
         uses: ToFood/tofood-ai/.github/actions/analyze-pr@main
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}

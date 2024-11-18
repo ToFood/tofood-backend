@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Run Pull Request Analysis
-        uses: tofood-ai@main  # Repositório ToFood-ai
+        uses: ToFood/tofood-ai/.github/actions/analyze-pr@main  # Repositório ToFood-ai
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}  # Chave da OpenAI
           openai_model: gpt-3.5-turbo                   # Modelo OpenAI

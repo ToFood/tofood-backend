@@ -1,0 +1,21 @@
+name: Analyze Pull Request with ToFood AI
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Pull Request Analysis
+        uses: tofood-ai@main  # Repositório ToFood-ai
+        with:
+          openai_api_key: ${{ secrets.OPENAI_API_KEY }}  # Chave da OpenAI
+          openai_model: gpt-3.5-turbo                   # Modelo OpenAI
+          prompt_text: |
+            Analise este Pull Request. Verifique:
+            - Melhorias de código e aderência às boas práticas.
+            - Possíveis bugs ou inconsistências.
+            - Sugestões de melhorias.

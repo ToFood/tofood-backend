@@ -17,7 +17,7 @@ jobs:
         uses: ohntrebor/raico/.github/actions/analyze-pr@ra/modularize
         with:
           api_key: ${{ secrets.OPENAI_API_KEY }}
-          ai_provider: "gemini"
+          ai_provider: "openai"
           ai_model: "gpt-4"
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt_text: "Qual é a melhor linguagem para codar?"

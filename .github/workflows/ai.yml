@@ -14,10 +14,10 @@ jobs:
 
     steps:
       - name: 🐈‍⬛ Run Pull Request Analysis
-        uses: ohntrebor/raico/.github/actions/analyze-pr@ra/feat/gemini
+        uses: ohntrebor/raico/.github/actions/analyze-pr@ra/modularize
         with:
           api_key: ${{ secrets.GEMINI_API_KEY }}
           ai_provider: "gemini"
           ai_model: "gemini-1.5-flash-latest"
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          prompt: "Qual é a melhor linguagem para codar?"
+          prompt_text: "Qual é a melhor linguagem para codar?"

@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: 🐈‍⬛ Run Pull Request Analysis
-        uses: ohntrebor/raico/.github/actions/analyze-pr@ra/modularize
+        uses: ohntrebor/raico/.github/actions/analyze-pr@main
         with:
           api_key: ${{ secrets.OPENAI_API_KEY }}
           ai_provider: "openai"

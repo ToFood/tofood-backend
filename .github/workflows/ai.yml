@@ -1,4 +1,4 @@
-name: Analyze Pull Request with RAICO AI
+name: RAICO Analyze
 
 on:
   pull_request:
@@ -14,10 +14,11 @@ jobs:
 
     steps:
       - name: 🐈‍⬛ Run Pull Request Analysis
-        uses: ohntrebor/raico/.github/actions/analyze-pr@main
+        uses: ohntrebor/raico/.github/actions/analyze-pr@ra/feat/gemini
         with:
-          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-          openai_model: gpt-3.5-turbo
+          ai_api_key: ${{ secrets.GEMINI_API_KEY }}
+          ai_provider: "gemini"
+          ai_model: "gemini-1.5-flash-latest"
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt_text: |
             Analise este Pull Request. Verifique:

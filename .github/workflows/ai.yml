@@ -16,9 +16,8 @@ jobs:
       - name: 🐈‍⬛ Run Pull Request Analysis
         uses: ohntrebor/raico/.github/actions/analyze-pr@ra/feat/gemini
         with:
-          ai_api_key: ${{ secrets.GEMINI_API_KEY }}
+          api_key: ${{ secrets.GEMINI_API_KEY }}
           ai_provider: "gemini"
           ai_model: "gemini-1.5-flash-latest"
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          prompt_text: |
-            Qual é a melhor linguagem para codar?
+          prompt: "Qual é a melhor linguagem para codar?"

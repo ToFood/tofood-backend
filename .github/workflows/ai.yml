@@ -21,7 +21,4 @@ jobs:
           ai_model: "gemini-1.5-flash-latest"
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt_text: |
-            Analise este Pull Request. Verifique:
-            - Melhorias de código e aderência às boas práticas.
-            - Possíveis bugs ou inconsistências.
-            - Sugestões de melhorias.
+            Qual é a melhor linguagem para codar?

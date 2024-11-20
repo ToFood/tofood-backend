@@ -1,4 +1,4 @@
-name: RAICO Analyze
+name: RAICO Review
 
 on:
   pull_request:
@@ -19,7 +19,7 @@ jobs:
 
     steps:
 
-      - name: 🐈‍⬛ Run Pull Request Analysis
+      - name: 🤖 Run Pull Request Review
         uses: ohntrebor/raico/.github/actions/analyze-pr@main
         with:
           api_key: ${{ secrets.GEMINI_API_KEY }}
@@ -27,20 +27,4 @@ jobs:
           ai_model: ${{ env.AI_MODEL }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           prompt_text: ${{ env.PROMPT_TEXT }}
-        id: analysis # Captura a saída do job
 
-      - name: Log Analysis Results
-        run: |
-          echo "Analysis output:"
-          echo "================="
-          echo "${{ steps.analysis.outputs.stdout }}"
-          echo "Analysis error:"
-          echo "================="
-          echo "${{ steps.analysis.outputs.stderr }}"
-
-      - name: Check for errors
-        if: steps.analysis.conclusion != 'success'
-        run: |
-          echo "Raico analysis failed! Check the logs above."
-          # Adicione aqui a notificação por email ou comentário no PR
-          # Ex:  curl -X POST ...

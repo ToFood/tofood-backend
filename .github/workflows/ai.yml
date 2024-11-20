@@ -16,8 +16,8 @@ jobs:
       - name: 🐈‍⬛ Run Pull Request Analysis
         uses: ohntrebor/raico/.github/actions/analyze-pr@main
         with:
-          api_key: ${{ secrets.OPENAI_API_KEY }}
-          ai_provider: "openai"
-          ai_model: "gpt-4o-mini"
+          api_key: ${{ secrets.GEMINI_API_KEY }}
+          ai_provider: "gemini"
+          ai_model: "gemini-1.5-flash-latest"
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          prompt_text: "Qual é a melhor linguagem para codar?"
+          prompt_text: "Com base nas alterações do meu PR, consegue me dar dias de boas práticas?"

@@ -14,7 +14,7 @@ spec:
       labels:
         app: tofood
     spec:
-      automountServiceAccountToken: false # Desativa a montagem automática do token da conta de serviço
+      automountServiceAccountToken: false
       containers:
         - name: tofood-container
           image: AKIAQQABDPONQ3T7KOOJ.dkr.ecr.us-east-1.amazonaws.com/tofood/backend:latest 

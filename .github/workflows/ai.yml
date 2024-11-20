@@ -1,4 +1,4 @@
-name: Analyze Pull Request with RAICO AI
+name: RAICO Review
 
 on:
   pull_request:
@@ -8,19 +8,23 @@ permissions:
   pull-requests: write
   contents: write
 
+env:
+  AI_PROVIDER: "gemini"
+  AI_MODEL: "gemini-1.5-flash-latest"
+  PROMPT_TEXT: "Com base nas alterações do meu PR, consegue me dar dicas de boas práticas de segurança e estilo de código, considerando que este projeto é um [descrição do projeto]?  Detalhes das alterações: [link para as alterações do PR]"
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🐈‍⬛ Run Pull Request Analysis
+
+      - name: 🤖 Run Pull Request Review
         uses: ohntrebor/raico/.github/actions/analyze-pr@main
         with:
-          openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-          openai_model: gpt-3.5-turbo
+          api_key: ${{ secrets.GEMINI_API_KEY }}
+          ai_provider: ${{ env.AI_PROVIDER }}
+          ai_model: ${{ env.AI_MODEL }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          prompt_text: |
-            Analise este Pull Request. Verifique:
-            - Melhorias de código e aderência às boas práticas.
-            - Possíveis bugs ou inconsistências.
-            - Sugestões de melhorias.
+          prompt_text: ${{ env.PROMPT_TEXT }}
+

@@ -14,7 +14,7 @@ export class GetUserByCpfUseCase {
      * @returns UserDTO contendo os dados do usuário ou null se não encontrado.
      * @throws Error se o CPF for inválido ou ocorrer algum erro na busca.
      */
-    async execute(cpf: string): Promise<UserDTO | null> {
+    async execute(): Promise<UserDTO | null> {
         // Validação do CPF
         if (typeof cpf !== 'string' || cpf.trim().length === 0) {
             throw new Error("CPF must be a non-empty string");

@@ -6,23 +6,7 @@ import { ORDER_STATUSES } from '../../external/database/mongoDB/frameworks/mongo
 export class UpdateOrderStatusUseCase {
     constructor(private orderRepository: IOrderRepository) {}
 
-    async execute(orderId: string, updateData: { payment?: string; status?: (typeof ORDER_STATUSES)[number] }): Promise<OrderDTO | null> {
-        try {
-            // Verificar se o orderId foi fornecido
-            if (!orderId) {
-                throw new Error("Order ID must be provided");
-            }
-
-            // Verificar se pelo menos um dos campos de atualização foi fornecido
-            if (!updateData.payment && !updateData.status) {
-                throw new Error("At least one field (payment or status) must be provided for update");
-            }
-
-            // Atualizar o pedido com os novos dados fornecidos
-            const updatedOrder: Order | null = await this.orderRepository.updateById(orderId, updateData);
-
-            // Se o pedido não foi encontrado, lançar erro
-            if (!updatedOrder) {
+    async ) {
                 throw new Error("Order not found");
             }
 

@@ -22,8 +22,7 @@ export class GetOrdersUseCase {
         }
     }
 
-    async getOrderById(orderId: string): Promise<OrderDTO | null> {
-        try {
+    async getO
             // Verificar se o orderId foi fornecido
             if (!orderId) {
                 throw new Error("Order ID must be provided");

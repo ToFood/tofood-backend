@@ -11,7 +11,7 @@ permissions:
 env:
   AI_PROVIDER: "gemini"
   AI_MODEL: "gemini-1.5-flash-latest"
-  PROMPT: "Qual a capital do Brasil?"
+  #PROMPT: "Qual a capital do Brasil?"
 
 jobs:
   analyze:
@@ -26,5 +26,5 @@ jobs:
           ai_provider: ${{ env.AI_PROVIDER }}
           ai_model: ${{ env.AI_MODEL }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          prompt: ${{ env.PROMPT }}
+          #prompt: ${{ env.PROMPT }}
 

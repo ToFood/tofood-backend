@@ -12,19 +12,7 @@ interface CreateUserRequest {
 }
 
 /**
- * Caso de uso para criar um novo usuário.
- */
-export class CreateUserUseCase {
-    constructor(private userRepository: IUserRepository) {}
-
-    /**
-     * Executa o caso de uso de criação de usuário.
-     * @param request Dados para criação do usuário.
-     * @returns Instância do usuário criado.
-     * @throws Error se os dados forem inválidos ou ocorrer algum erro no processo de criação.
-     */
-    async execute(request: CreateUserRequest): Promise<UserDTO> {
-        const { name, cpf, email } = request;
+ * Caso de uso para criar ucpf, email } = request;
 
         // Validações de campos obrigatórios
         if (!name) {

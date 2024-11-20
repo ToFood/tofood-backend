@@ -27,18 +27,7 @@ export class UpdateProductUseCase {
         const { id, name, category, price, description, imagePath, mimetype } = request;
 
         const updateData: Partial<Product> = { name, category, price, description };
-
-        try {
-            // Se houver uma imagem nova, ler o arquivo e converter para Base64
-            if (imagePath) {
-                const imageBase64 = fs.readFileSync(imagePath, { encoding: 'base64' });
-                const imageDataUri = `data:${mimetype};base64,${imageBase64}`;
-                updateData.image = imageDataUri;
-                fs.unlinkSync(imagePath);
-            }
-
-            // Atualizar o produto no repositório
-            const updatedProduct = await this.productRepository.update(id, updateData);
+updatedProduct = await this.productRepository.update(id, updateData);
 
             if (!updatedProduct) {
                 return null;

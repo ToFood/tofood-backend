@@ -8,16 +8,39 @@ permissions:
   pull-requests: write
   contents: write
 
+env:
+  AI_PROVIDER: "gemini"
+  AI_MODEL: "gemini-1.5-flash-latest"
+  PROMPT_TEXT: "Com base nas alterações do meu PR, consegue me dar dicas de boas práticas de segurança e estilo de código, considerando que este projeto é um [descrição do projeto]?  Detalhes das alterações: [link para as alterações do PR]"
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: 🐈‍⬛ Run Pull Request Analysis
         uses: ohntrebor/raico/.github/actions/analyze-pr@main
         with:
           api_key: ${{ secrets.GEMINI_API_KEY }}
-          ai_provider: "gemini"
-          ai_model: "gemini-1.5-flash-latest"
+          ai_provider: ${{ env.AI_PROVIDER }}
+          ai_model: ${{ env.AI_MODEL }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          prompt_text: "Com base nas alterações do meu PR, consegue me dar dias de boas práticas?"
+          prompt_text: ${{ env.PROMPT_TEXT }}
+        id: analysis # Captura a saída do job
+
+      - name: Log Analysis Results
+        run: |
+          echo "Analysis output:"
+          echo "================="
+          echo "${{ steps.analysis.outputs.stdout }}"
+          echo "Analysis error:"
+          echo "================="
+          echo "${{ steps.analysis.outputs.stderr }}"
+
+      - name: Check for errors
+        if: steps.analysis.conclusion != 'success'
+        run: |
+          echo "Raico analysis failed! Check the logs above."
+          # Adicione aqui a notificação por email ou comentário no PR
+          # Ex:  curl -X POST ...

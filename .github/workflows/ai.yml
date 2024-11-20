@@ -11,7 +11,7 @@ permissions:
 env:
   AI_PROVIDER: "gemini"
   AI_MODEL: "gemini-1.5-flash-latest"
-  PROMPT_TEXT: "Com base nas alterações do meu PR, consegue me dar dicas de boas práticas de segurança e estilo de código, considerando que este projeto é um [descrição do projeto]?  Detalhes das alterações: [link para as alterações do PR]"
+  PROMPT: "Qual a capital do Brasil?"
 
 jobs:
   analyze:
@@ -26,5 +26,5 @@ jobs:
           ai_provider: ${{ env.AI_PROVIDER }}
           ai_model: ${{ env.AI_MODEL }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          prompt_text: ${{ env.PROMPT_TEXT }}
+          prompt: ${{ env.PROMPT }}
 

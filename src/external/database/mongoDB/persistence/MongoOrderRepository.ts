@@ -30,26 +30,33 @@ export class MongoOrderRepository implements IOrderRepository {
   async save(order: any): Promise<Order> {
     // Create a new OrderModel instance
     const orderModel = new OrderModel({
-        user: order?.user?._id, // Aqui garantimos que o campo user está sendo passado corretamente como ID
-        status: order.status,
-        orderProducts: order?.orderProducts?.map((p) => ({
-            product: p.product._id, // Aqui garantimos que o produto está sendo salvo como ID
-            quantity: p.quantity,
-            price: p.price,
-        })),
-        createdAt: order.createdAt,
-        payment: order.paymentStatus,
-        totalAmount: order.totalAmount,
+      user: order?.user?._id,
+      status: order.status,
+      orderProducts: order?.orderProducts?.map((p) => ({
+        product: p.product._id,
+        quantity: p.quantity,
+        price: p.price,
+      })),
+      createdAt: order.createdAt,
+      payment: order.paymentStatus,
+      totalAmount: order.totalAmount,
     });
 
-    // Save the order in the database
-    const savedOrder: any = await orderModel.save();
+    const savedOrder = await orderModel.save();
+
+    if (!savedOrder || !(savedOrder instanceof OrderModel)) {
+      throw new Error("Saved order is not a valid Mongoose document.");
+    }
 
     // Populate user and product fields
-    const populatedOrder = await savedOrder
+    const populatedOrder = await OrderModel.findById(savedOrder._id)
       .populate("user")
       .populate("orderProducts.product")
-      .execPopulate();
+      .exec();
+
+    if (!populatedOrder) {
+      throw new Error("Order not found after saving.");
+    }
 
     // Return the new Order instance
     return new Order(
@@ -65,8 +72,7 @@ export class MongoOrderRepository implements IOrderRepository {
       populatedOrder.payment,
       populatedOrder.totalAmount
     );
-}
-
+  }
 
   async findByStatus(status: string[]): Promise<Order[]> {
     const ordersData: Order[] = await OrderModel.find({
@@ -144,7 +150,7 @@ export class MongoOrderRepository implements IOrderRepository {
       })),
       updatedOrderData.createdAt,
       updatedOrderData.paymentStatus,
-      updatedOrderData.totalAmount,
+      updatedOrderData.totalAmount
     );
   }
 }

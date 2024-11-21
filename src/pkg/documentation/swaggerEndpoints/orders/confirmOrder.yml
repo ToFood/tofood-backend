@@ -21,14 +21,14 @@ paths:
                   description: The status to set for the order (e.g., "CONFIRMED")
                   enum: ["CONFIRMED"]
                   example: CONFIRMED
-                payment:
+                paymentStatus:
                   type: string
                   description: The payment status for the order (e.g., "PAID")
                   enum: ["PAID"]
                   example: PAID
               required:
                 - status
-                - payment
+                - paymentStatus
       responses:
         "200":
           description: OK - Order confirmed successfully
@@ -57,7 +57,7 @@ paths:
                   status:
                     type: string
                     description: The status of the confirmed order
-                  payment:
+                  paymentStatus:
                     type: string
                     description: The payment status of the confirmed order
                   createdAt:

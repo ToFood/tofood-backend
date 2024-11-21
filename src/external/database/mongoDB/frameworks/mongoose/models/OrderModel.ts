@@ -28,7 +28,7 @@ interface IOrder extends Document {
     price: number;
   }>;
   createdAt: Date;
-  payment: (typeof PAYMENT_STATUSES)[number];
+  paymentStatus: (typeof PAYMENT_STATUSES)[number];
   totalAmount: number;
 }
 
@@ -48,7 +48,7 @@ const OrderSchema: Schema = new Schema({
     },
   ],
   createdAt: { type: Date, default: Date.now },
-  payment: { type: String, required: true, enum: PAYMENT_STATUSES },
+  paymentStatus: { type: String, required: true, enum: PAYMENT_STATUSES },
   totalAmount: { type: Number, required: true },
 });
 

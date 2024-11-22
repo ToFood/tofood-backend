@@ -10,7 +10,7 @@ permissions:
 
 env:
   AI_PROVIDER: "openai"
-  AI_MODEL: "gpt-3.5-turbo"
+  AI_MODEL: "gpt-3.5-turbo-16k"
   AI_VERSION: "v1beta"
   PROMPT: "Com base nas alterações realizadas no meu PR, gostaria de obter recomendações específicas sobre boas práticas de segurança e estilo de código, considerando que este projeto é um [descrição do projeto]. Por favor, analise as do meu PR e forneça sugestões práticas e contextualizadas para melhorar a qualidade do código, garantindo alinhamento com padrões de segurança e consistência com as melhores práticas do mercado."
 

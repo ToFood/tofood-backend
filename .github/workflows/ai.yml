@@ -10,7 +10,7 @@ permissions:
 
 env:
   AI_PROVIDER: "openai"
-  AI_MODEL: "gpt-3.5-turbo-16k"
+  AI_MODEL: "gpt-3.5-turbo"
   AI_VERSION: "v1beta"
   PROMPT: "Com base nas alterações realizadas no meu PR, gostaria de obter recomendações específicas sobre boas práticas de segurança e estilo de código, considerando que este projeto é um [descrição do projeto]. Por favor, analise as do meu PR e forneça sugestões práticas e contextualizadas para melhorar a qualidade do código, garantindo alinhamento com padrões de segurança e consistência com as melhores práticas do mercado."
 
@@ -21,11 +21,12 @@ jobs:
     steps:
 
       - name: 🤖 Run Pull Request Review
-        uses: ohntrebor/raico/.github/actions/review-pr@main
+        uses: ohntrebor/raico/.github/actions/review/pull_request.yml@main
         with:
           ai_provider: ${{ env.AI_PROVIDER }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
           ai_api_key: ${{ secrets.OPENAI_API_KEY }} # Cadastrar a API_KEY no secrests do seu repositório
           ai_model: ${{ env.AI_MODEL }} # No exemplo foi definida no pipe, mas pode cadastrar no seu repositório se preferir
           #ai_version: ${{ env.AI_VERSION }} # (opcional) dependendo da AI será solicitado uma versão
           github_token: ${{ secrets.GITHUB_TOKEN }} # O Github gere automático em pipelines, não precisa gerar
+          review_type: 1
          # prompt: ${{ env.PROMPT }} # (opcional) Caso não defina um prompt aqui, será considerado o prompt default do repositório RAICO

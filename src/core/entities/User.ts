@@ -3,9 +3,9 @@
  */
 export class User {
   constructor(
-    public _id: string,
-    public name: string,
-    public cpf: string,
-    public email: string
+    public _id?: string,
+    public name?: string,
+    public cpf?: string,
+    public email?: string
   ) {}
 }

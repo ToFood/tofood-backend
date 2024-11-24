@@ -22,7 +22,6 @@ export default [
     rules: {
       "@typescript-eslint/explicit-function-return-type": "warn",
       "@typescript-eslint/no-explicit-any": "warn",
-      "singleQuote": ["error", true],
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {
@@ -46,6 +45,7 @@ export default [
       indent: ["error", 2, { SwitchCase: 1 }],
       "arrow-body-style": ["warn", "as-needed"],
       "prefer-arrow-callback": "warn",
+      "allowTemplateLiterals": true
     },
   },
 ];

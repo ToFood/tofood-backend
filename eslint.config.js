@@ -44,7 +44,7 @@ export default [
       indent: ["error", 2, { SwitchCase: 1 }],
       "arrow-body-style": ["warn", "as-needed"],
       "prefer-arrow-callback": "warn",
-      "avoidEscape": true
+      "quotes": "off"
     },
   },
 ];

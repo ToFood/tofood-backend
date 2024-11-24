@@ -22,7 +22,7 @@ export default [
     rules: {
       "@typescript-eslint/explicit-function-return-type": "warn",
       "@typescript-eslint/no-explicit-any": "warn",
-      "prettier/prettier": ["error", { singleQuote: true }],
+      singleQuote: true,
       "@typescript-eslint/no-unused-vars": [
         "warn",
         {

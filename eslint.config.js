@@ -40,7 +40,7 @@ export default [
       "no-var": "error",
       "no-trailing-spaces": "error",
       "eol-last": ["error", "always"],
-      quotes: ["error", "single", { avoidEscape: true }],
+      "quotes": ["error", "single", { "avoidEscape": true }],
       semi: ["error", "always"],
       "no-multiple-empty-lines": ["error", { max: 1 }],
       indent: ["error", 2, { SwitchCase: 1 }],

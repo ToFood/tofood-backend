@@ -5,7 +5,7 @@ import { Order } from "../entities/Order";
 export class GetOrdersByStatusUseCase {
   constructor(private orderRepository: IOrderRepository) {}
 
-  async execute(status: string[]): Promise<OrderDTO[]> {
+  async execute(status: any): Promise<OrderDTO[]> {
     try {
       // Verificar se o status foi fornecido e se é um array
       if (!status || !Array.isArray(status)) {

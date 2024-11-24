@@ -3,10 +3,13 @@ import {
   createPixPaymentUseCase,
   getOrdersUseCase,
   updateOrderStatusUseCase,
-} from "../../config/di/container"; 
-import { fetchPaymentDetails, mapPaymentStatusToOrderStatus } from "../../pkg/middleware/utils";
+} from "../../config/di/container";
 import { Order } from "../../core/entities/Order";
 import { ORDER_STATUSES } from "../../external/database/mongoDB/frameworks/mongoose/models/OrderModel";
+import {
+  fetchPaymentDetails,
+  mapPaymentStatusToOrderStatus,
+} from "../../pkg/middleware/utils";
 
 const router = express.Router();
 
@@ -64,7 +67,9 @@ class PaymentController {
         const paymentDetails = await fetchPaymentDetails(paymentId);
 
         const orderId = paymentDetails.external_reference;
-        const orderPaymentStatus = mapPaymentStatusToOrderStatus(paymentDetails.status);
+        const orderPaymentStatus = mapPaymentStatusToOrderStatus(
+          paymentDetails.status
+        );
 
         // Use o tipo correto para 'orderStatus'
         let orderStatus: (typeof ORDER_STATUSES)[number] = ORDER_STATUSES[0]; // "OPENED"
@@ -76,7 +81,13 @@ class PaymentController {
         }
 
         await updateOrderStatusUseCase.execute(orderId, {
-          payment: orderPaymentStatus,
+          paymentStatus: orderPaymentStatus as
+            | "PENDING"
+            | "PROCESSING"
+            | "PAID"
+            | "REJECTED"
+            | "UNPAID"
+            | undefined,
           status: orderStatus,
         });
       }

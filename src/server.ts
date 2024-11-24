@@ -6,7 +6,6 @@ import PaymentService from "./adapters/gateway/MercadoPagoGateway";
 import db from "./external/database/mongoDB/MongoDB";
 import swaggerSpecs from "./pkg/documentation/swaggerConfig";
 import routes from "./routes/index";
-import { prefillProducts } from "./utils/InsertProductsMock";
 
 const port = process.env.PORT || 3000;
 
@@ -29,9 +28,6 @@ app.listen(port, async () => {
   console.log(`ngrok URL: ${ngrokUrl}`);
   console.log(`Server Running at http://localhost:${port}`);
 });
-
-// WE ARE CHECKING IF THERE IS ANY PRODUCT CREATE ON DB, IF NOT WE ARE ADDING OUR PRODUCTS MOCK INTO DB
-prefillProducts();
 
 routes(app);
 

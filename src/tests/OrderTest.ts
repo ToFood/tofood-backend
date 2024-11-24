@@ -316,7 +316,12 @@ describe("OrderUseCases", () => {
       const orderId = "order-123";
       const mockOrder: OrderDTO = {
         _id: orderId,
-        user: { cpf: "12345678901", name: "John Doe" },
+        user: {
+          _id: "12345",
+          cpf: "12345678901",
+          name: "John Doe",
+          email: "emailtest@gmail.com",
+        },
         status: "OPENED",
         orderProducts: [],
         createdAt: new Date(),
@@ -383,7 +388,12 @@ describe("OrderUseCases", () => {
         const mockOrders: Partial<Order>[] = [
           {
             _id: "1",
-            user: { cpf: "123", name: "User 1" },
+            user: {
+              _id: "12345",
+              cpf: "123",
+              name: "User 1",
+              email: "emailtest@gmail.com",
+            },
             status: ORDER_STATUSES[0], // OPENED
             orderProducts: [],
             createdAt: new Date(),
@@ -392,7 +402,12 @@ describe("OrderUseCases", () => {
           },
           {
             _id: "2",
-            user: { cpf: "456", name: "User 2" },
+            user: {
+              _id: "12345",
+              cpf: "456",
+              name: "User 2",
+              email: "emailtest@gmail.com",
+            },
             status: ORDER_STATUSES[4], // FINALIZED
             orderProducts: [],
             createdAt: new Date(),
@@ -425,7 +440,12 @@ describe("OrderUseCases", () => {
       it("should return the order DTO when order is found", async () => {
         const mockOrder: Partial<Order> = {
           _id: "1",
-          user: { cpf: "123", name: "User 1" },
+          user: {
+            _id: "12345",
+            cpf: "123",
+            name: "User 1",
+            email: "emailtest@gmail.com",
+          },
           status: ORDER_STATUSES[0], // OPENED
           orderProducts: [],
           createdAt: new Date(),
@@ -486,7 +506,12 @@ describe("OrderUseCases", () => {
       const mockOrders: Partial<Order>[] = [
         {
           _id: "1",
-          user: { cpf: "12345678901", name: "User 1" },
+          user: {
+            _id: "12345",
+            cpf: "12345678901",
+            name: "User 1",
+            email: "emailtest@gmail.com",
+          },
           status: "OPENED",
           orderProducts: [],
           createdAt: new Date(),
@@ -495,7 +520,12 @@ describe("OrderUseCases", () => {
         },
         {
           _id: "2",
-          user: { cpf: "98765432101", name: "User 2" },
+          user: {
+            _id: "12345",
+            cpf: "98765432101",
+            name: "User 2",
+            email: "emailtest@gmail.com",
+          },
           status: "OPENED",
           orderProducts: [],
           createdAt: new Date(),
@@ -575,7 +605,12 @@ describe("OrderUseCases", () => {
       } = { status: "CLOSED" };
       const mockOrder: Order = {
         _id: orderId,
-        user: { cpf: "12345678901", name: "John Doe" },
+        user: {
+          _id: "12345",
+          cpf: "12345678901",
+          name: "John Doe",
+          email: "emailtest@gmail.com",
+        },
         status: "CLOSED",
         orderProducts: [],
         createdAt: new Date(),

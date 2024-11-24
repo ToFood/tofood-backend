@@ -81,7 +81,13 @@ class PaymentController {
         }
 
         await updateOrderStatusUseCase.execute(orderId, {
-          paymentStatus: orderPaymentStatus,
+          paymentStatus: orderPaymentStatus as
+            | "PENDING"
+            | "PROCESSING"
+            | "PAID"
+            | "REJECTED"
+            | "UNPAID"
+            | undefined,
           status: orderStatus,
         });
       }

@@ -51,7 +51,6 @@ export class MongoOrderRepository implements IOrderRepository {
     // Populate user and product fields
     const populatedOrder = await OrderModel.findById(savedOrder._id)
       .populate("user")
-      .populate("orderProducts.product")
       .exec();
 
     if (!populatedOrder) {
@@ -61,13 +60,13 @@ export class MongoOrderRepository implements IOrderRepository {
     // Return the new Order instance
     return new Order(
       (populatedOrder._id as unknown as string).toString(),
-      populatedOrder.user,
+      populatedOrder.user as any,
       populatedOrder.status,
       populatedOrder.orderProducts.map((p) => ({
         product: p.product,
         price: p.price,
         quantity: p.quantity,
-      })),
+      })) as any,
       populatedOrder.createdAt,
       populatedOrder.paymentStatus,
       populatedOrder.totalAmount

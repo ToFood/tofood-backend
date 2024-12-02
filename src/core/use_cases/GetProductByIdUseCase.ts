@@ -1,6 +1,7 @@
 import { ProductDTO } from "../../adapters/dtos/ProductDTO";
 import { IProductRepository } from "../../adapters/repositories/IProductRepository";
 import ProductModel from "../../external/database/postgreSQL/frameworks/models/ProductModel";
+import { Product as ProductType } from "../entities/Product";
 
 /**
  * Caso de uso para buscar um produto pelo ID.
@@ -23,7 +24,7 @@ export class GetProductByIdUseCase {
       }
 
       // Convert the product to a DTO and return it
-      return this.toDTO(product);
+      return this.toDTO(product as any);
     } catch (error: any) {
       throw new Error(`Error fetching product by ID: ${error.message}`);
     }
@@ -32,7 +33,7 @@ export class GetProductByIdUseCase {
   /**
    * Converte uma entidade Product em ProductDTO.
    */
-  private toDTO(product: typeof ProductModel): ProductDTO {
+  private toDTO(product: ProductType): ProductDTO {
     return {
       id: product.id, // Make sure this matches the column name in your model
       name: product.name,

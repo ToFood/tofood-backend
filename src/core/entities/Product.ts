@@ -1,6 +1,8 @@
+import { UUID } from "crypto";
+
 export class Product {
   constructor(
-    public id: string,
+    public id: UUID,
     public name: string,
     public category: string,
     public price: number,

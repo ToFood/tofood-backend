@@ -1,6 +1,7 @@
 import fs from "fs";
 import { ProductDTO } from "../../adapters/dtos/ProductDTO";
-import ProductModel from "../../external/database/postgreSQL/frameworks/models/ProductModel.js";
+import { IProductRepository } from "../../adapters/repositories/IProductRepository";
+import ProductModel from "../../external/database/postgreSQL/frameworks/models/ProductModel";
 import { Product as ProductType } from "../entities/Product";
 
 interface UpdateProductRequest {
@@ -14,6 +15,7 @@ interface UpdateProductRequest {
 }
 
 export class UpdateProductUseCase {
+  constructor(private productRepository: IProductRepository) {}
   /**
    * Atualiza um produto existente.
    * Converte a imagem para Base64, se houver, e retorna o produto atualizado como DTO.
@@ -57,7 +59,7 @@ export class UpdateProductUseCase {
       }
 
       // Retornar o DTO do produto atualizado
-      return this.toDTO(updatedProduct);
+      return this.toDTO(updatedProduct as any);
     } catch (error: any) {
       throw new Error(`Error updating product: ${error.message}`);
     }

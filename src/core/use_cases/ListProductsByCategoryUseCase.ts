@@ -1,6 +1,6 @@
 import { ProductDTO } from "../../adapters/dtos/ProductDTO";
 import { IProductRepository } from "../../adapters/repositories/IProductRepository";
-import ProductModel from "../../external/database/postgreSQL/frameworks/models/ProductModel.js";
+import ProductModel from "../../external/database/postgreSQL/frameworks/models/ProductModel";
 import { Product as ProductType } from "../entities/Product";
 
 /**
@@ -16,7 +16,7 @@ export class ListProductsByCategoryUseCase {
   async execute(category: string): Promise<ProductDTO[]> {
     try {
       const products = await ProductModel.findAll({ where: { category } });
-      return products.map((product) => this.toDTO(product));
+      return products.map((product) => this.toDTO(product as any));
     } catch (error: any) {
       throw new Error(`Error listing products by category: ${error.message}`);
     }
@@ -27,7 +27,7 @@ export class ListProductsByCategoryUseCase {
    */
   private toDTO(product: ProductType): ProductDTO {
     return {
-      id: product._id,
+      id: product.id,
       name: product.name,
       category: product.category,
       price: product.price,

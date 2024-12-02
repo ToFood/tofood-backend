@@ -1,5 +1,5 @@
 import { IProductRepository } from "../../adapters/repositories/IProductRepository";
-import ProductModel from "../../external/database/postgreSQL/frameworks/models/ProductModel.js";
+import ProductModel from "../../external/database/postgreSQL/frameworks/models/ProductModel";
 
 /**
  * Caso de uso para deletar um produto pelo ID.

@@ -1,5 +1,6 @@
 import fs from "fs";
 import { ProductDTO } from "../../adapters/dtos/ProductDTO";
+import { IProductRepository } from "../../adapters/repositories/IProductRepository";
 import ProductModel from "../../external/database/postgreSQL/frameworks/models/ProductModel";
 
 interface CreateProductRequest {
@@ -12,6 +13,8 @@ interface CreateProductRequest {
 }
 
 export class CreateProductUseCase {
+  constructor(private productRepository: IProductRepository) {}
+
   async execute(request: CreateProductRequest): Promise<ProductDTO> {
     const { name, category, price, description, imagePath, mimetype } = request;
 

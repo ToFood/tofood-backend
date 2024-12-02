@@ -5,7 +5,7 @@ import ngrok from "ngrok";
 import swaggerUi from "swagger-ui-express";
 import PaymentService from "./adapters/gateway/MercadoPagoGateway";
 import db from "./external/database/mongoDB/MongoDB";
-import ProductModel from "./external/database/postgreSQL/frameworks/models/ProductModel.js";
+import ProductModel from "./external/database/postgreSQL/frameworks/models/ProductModel";
 import sequelize from "./external/database/postgreSQL/sequelize";
 import swaggerSpecs from "./pkg/documentation/swaggerConfig";
 import routes from "./routes/index";

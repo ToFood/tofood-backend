@@ -13,6 +13,12 @@
     "lib": ["es6"],
     "noEmit": true // Impede a geração de arquivos na pasta `build`
   },
-  "include": ["src/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.js",
+    "src/**/**/**/*.js",
+    "src/**/**/*.js",
+    "src/external/database/postgreSQL/frameworks/models/ProductModel.js"
+  ],
   "exclude": ["node_modules", "**/*.test.ts", "src/configs"]
 }

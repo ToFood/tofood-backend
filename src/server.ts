@@ -1,34 +1,66 @@
+import cors from "cors";
 import "dotenv/config";
 import express from "express";
 import ngrok from "ngrok";
 import swaggerUi from "swagger-ui-express";
 import PaymentService from "./adapters/gateway/MercadoPagoGateway";
 import db from "./external/database/mongoDB/MongoDB";
+import ProductModel from "./external/database/postgreSQL/frameworks/models/ProductModel.js";
+import sequelize from "./external/database/postgreSQL/sequelize";
 import swaggerSpecs from "./pkg/documentation/swaggerConfig";
 import routes from "./routes/index";
 
-const port = process.env.PORT || 3000;
-
-db.on("error", console.log.bind(console, "Database Error"));
-db.once("open", () => console.log("Database is running"));
-
+// Initialize the app
 const app = express();
-app.use(express.json());
+const port = process.env.PORT || 3000;
+console.log({ port });
 
+// Middleware
+app.use(express.json());
+app.use(cors());
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
-// app.use(cors());
+// Test PostgreSQL connection and sync models
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("Connection to PostgreSQL has been established successfully.");
+
+    await ProductModel.sync({ alter: false }); // Change `alter` to `true` for schema updates
+    console.log("Product model synced with the database.");
+  } catch (error) {
+    console.error("Unable to connect to PostgreSQL:", error);
+  }
+})();
+
+// MongoDB connection
+db.on("error", console.log.bind(console, "MongoDB Error"));
+db.once("open", () => console.log("MongoDB is running"));
+
+// Test route
 app.get("/", (req, res) => res.send("Server is running!"));
-app.use(express.json());
 
+// Start the server
 app.listen(port, async () => {
-  const ngrokUrl = await ngrok.connect(Number(port));
-  PaymentService.setWebhookUrl(`${ngrokUrl}/webhook`);
-
-  console.log(`ngrok URL: ${ngrokUrl}`);
   console.log(`Server Running at http://localhost:${port}`);
+
+  try {
+    const ngrokUrl = await ngrok.connect({
+      addr: port,
+      region: "us", // Specify region if needed
+    });
+    PaymentService.setWebhookUrl(`${ngrokUrl}/webhook`);
+    console.log(`ngrok URL: ${ngrokUrl}`);
+  } catch (error: any) {
+    console.error(
+      "Error starting ngrok. Ensure ngrok is installed and accessible.",
+      error.message
+    );
+    console.warn("Continuing without ngrok...");
+  }
 });
 
+// Load application routes
 routes(app);
 
 export default app;

@@ -38,7 +38,7 @@ export class MongoOrderRepository implements IOrderRepository {
         price: p.price,
       })),
       createdAt: order.createdAt,
-      payment: order.paymentStatus,
+      paymentStatus: order.paymentStatus,
       totalAmount: order.totalAmount,
     });
 
@@ -69,7 +69,7 @@ export class MongoOrderRepository implements IOrderRepository {
         quantity: p.quantity,
       })),
       populatedOrder.createdAt,
-      populatedOrder.payment,
+      populatedOrder.paymentStatus,
       populatedOrder.totalAmount
     );
   }

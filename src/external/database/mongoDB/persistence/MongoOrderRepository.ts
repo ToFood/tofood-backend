@@ -42,14 +42,21 @@ export class MongoOrderRepository implements IOrderRepository {
       totalAmount: order.totalAmount,
     });
 
-    // Save the order in the database
-    const savedOrder: any = await orderModel.save();
+    const savedOrder = await orderModel.save();
+
+    if (!savedOrder || !(savedOrder instanceof OrderModel)) {
+      throw new Error("Saved order is not a valid Mongoose document.");
+    }
 
     // Populate user and product fields
-    const populatedOrder = await savedOrder
+    const populatedOrder = await OrderModel.findById(savedOrder._id)
       .populate("user")
       .populate("orderProducts.product")
-      .execPopulate();
+      .exec();
+
+    if (!populatedOrder) {
+      throw new Error("Order not found after saving.");
+    }
 
     // Return the new Order instance
     return new Order(

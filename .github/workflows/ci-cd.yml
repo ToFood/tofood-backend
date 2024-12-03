@@ -22,7 +22,7 @@ env:
   DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   IMAGE_NAME: "tofood/backend"
-  CLUSTER_NAME: "tofood-eks-cluster"
+  CLUSTER_NAME: "amazing-disco-monster"
   DEPLOYMENT_NAME: "tofood-app"
   NODEGROUP_NAME: "tofood-nodegroup"
 
@@ -75,26 +75,7 @@ jobs:
       - name: 🔍 Rodar Lint
         run: npm run lint
 
-  # Teste de Conexão com AWS
-  aws_test_connection:
-    name: 📦 Teste de Conexão com AWS
-    runs-on: ubuntu-latest
-    needs: [test, lint]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    steps:
-      - name: 🎨 Fazer checkout do repositório
-        uses: actions/checkout@v4
-
-      - name: 🚀 Instalar Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: "16"
-
-      - name: 📃 Instalar dependências
-        run: npm install aws-sdk
-
-      - name: 📦 Testar conexão com a AWS
+      - name: 📦 Testar conexão com a AWS e listar clusters EKS
         run: |
           node -e "
           const AWS = require('aws-sdk');
@@ -105,9 +86,15 @@ jobs:
           });
           async function testConnection() {
             try {
+              // Testar conexão com o S3
               const s3 = new AWS.S3();
               const result = await s3.listBuckets().promise();
               console.log('✨ Conexão bem-sucedida com a AWS! Buckets:', result.Buckets.map(bucket => bucket.Name).join(', '));
+              
+              // Listar Clusters do EKS
+              const eks = new AWS.EKS();
+              const eksClusters = await eks.listClusters().promise();
+              console.log('✨ Clusters do EKS:', eksClusters.clusters.join(', '));
             } catch (error) {
               console.error('❌ Falha ao conectar à AWS:', error.message);
               process.exit(1);

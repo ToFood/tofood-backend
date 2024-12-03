@@ -75,7 +75,25 @@ jobs:
       - name: 🔍 Rodar Lint
         run: npm run lint
 
-      - name: 📦 Testar conexão com a AWS e listar clusters EKS
+  # Teste de Conexão com AWS
+  aws_test_connection:
+    name: 📦 Teste de Conexão com AWS
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: 🎨 Fazer checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: 🚀 Instalar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: 📃 Instalar dependências
+        run: npm install aws-sdk
+        
+      - name: 📦 Testar conexão com a AWS
         run: |
           node -e "
           const AWS = require('aws-sdk');
@@ -86,7 +104,6 @@ jobs:
           });
           async function testConnection() {
             try {
-              // Testar conexão com o S3
               const s3 = new AWS.S3();
               const result = await s3.listBuckets().promise();
               console.log('✨ Conexão bem-sucedida com a AWS! Buckets:', result.Buckets.map(bucket => bucket.Name).join(', '));
@@ -237,7 +254,7 @@ jobs:
   docker_build_push:
     name: 🐋 Docker - Build & Push
     runs-on: ubuntu-latest
-    needs: [ecr_setup, eks_infrastructure]
+    needs: [ecr_setup]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
@@ -289,7 +306,7 @@ jobs:
   eks_deploy:
     name: 🚀 Deploy no EKS
     runs-on: ubuntu-latest
-    needs: [eks_infrastructure, docker_build_push]
+    needs: [docker_build_push]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:

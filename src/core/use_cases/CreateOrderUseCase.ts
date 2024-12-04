@@ -1,82 +1,91 @@
-import { IOrderRepository } from '../../adapters/repositories/IOrderRepository';
-import { IUserRepository } from '../../adapters/repositories/IUserRepository';
-import { IProductRepository } from '../../adapters/repositories/IProductRepository';
-import { Order } from '../entities/Order';
-import { OrderDTO } from '../../adapters/dtos/OrderDTO';
-import { ORDER_STATUSES, PAYMENT_STATUSES } from '../../external/database/mongoDB/frameworks/mongoose/models/OrderModel';
+import { OrderDTO } from "../../adapters/dtos/OrderDTO";
+import { IOrderRepository } from "../../adapters/repositories/IOrderRepository";
+import { IProductRepository } from "../../adapters/repositories/IProductRepository";
+import { IUserRepository } from "../../adapters/repositories/IUserRepository";
+import {
+  ORDER_STATUSES,
+  PAYMENT_STATUSES,
+} from "../../external/database/mongoDB/frameworks/mongoose/models/OrderModel";
+import ProductModel from "../../external/database/postgreSQL/frameworks/models/ProductModel";
+import { Order } from "../entities/Order";
 
 interface ProductOrder {
-    productId: string;
-    quantity: number;
+  productId: string;
+  quantity: number;
 }
 
 export class CreateOrderUseCase {
-    constructor(
-        private orderRepository: IOrderRepository,
-        private userRepository: IUserRepository,
-        private productRepository: IProductRepository
-    ) { }
+  constructor(
+    private orderRepository: IOrderRepository,
+    private userRepository: IUserRepository,
+    private productRepository: IProductRepository
+  ) {}
 
-    async execute(userCpf: string, products: ProductOrder[]): Promise<OrderDTO> {
-        try {
-            // Verificar se "products" é um array
-            if (!Array.isArray(products)) {
-                throw new Error("Products must be an array");
-            }
+  async execute(userCpf: string, products: ProductOrder[]): Promise<OrderDTO> {
+    try {
+      // Verificar se "products" é um array
+      if (!Array.isArray(products)) {
+        throw new Error("Products must be an array");
+      }
 
-            // Verificar se o usuário existe
-            const user = await this.userRepository.findByCpf(userCpf);
-            if (!user) {
-                throw new Error('User not found');
-            }
+      // Verificar se o usuário existe
+      const user = await this.userRepository.findByCpf(userCpf);
+      if (!user) {
+        throw new Error("User not found");
+      }
 
-            const orderProducts = await Promise.all(
-                products.map(async (product) => {
-                    const productData = await this.productRepository.findById(product.productId);
-                    if (!productData) {
-                        throw new Error(`Product with ID ${product.productId} not found`);
-                    }
-            
-                    // Retornando o objeto `Product` completo
-                    return {
-                        product: productData, // Passar o objeto Product completo
-                        quantity: product.quantity,
-                        price: productData.price
-                    };
-                })
-            );
+      const orderProducts = await Promise.all(
+        products.map(async (product) => {
+          const productData = (await ProductModel.findOne({
+            where: { id: product?.productId },
+          })) as any;
 
-            // Calcular o valor total do pedido
-            const totalAmount = orderProducts.reduce((acc, product) => acc + (product.price * product.quantity), 0);
+          if (!productData) {
+            throw new Error(`Product with ID ${product.productId} not found`);
+          }
 
-            // Criar a entidade Order
-            const order = new Order(
-                'generated-id',
-                user, // Objeto User
-                ORDER_STATUSES[0], // Status inicial como "OPENED"
-                orderProducts, // Lista de { product: Product, quantity: number, price: number }
-                new Date(), // Data de criação
-                PAYMENT_STATUSES[0], // Status de pagamento "PENDING"
-                totalAmount // Total calculado
-            );
+          // Retornando o objeto `Product` completo
+          return {
+            product: productData.toJSON(), // Passar o objeto Product completo
+            quantity: product.quantity,
+            price: productData.price,
+          };
+        })
+      );
 
-            // Salvar o pedido no repositório
-            const savedOrder = await this.orderRepository.save(order);
+      // Calcular o valor total do pedido
+      const totalAmount = orderProducts.reduce(
+        (acc, product) => acc + product.price * product.quantity,
+        0
+      );
 
-            // Retornar um DTO
-            return {
-                _id: savedOrder._id,
-                user: savedOrder.user,
-                status: savedOrder.status,
-                orderProducts: savedOrder.orderProducts,
-                createdAt: savedOrder.createdAt,
-                paymentStatus: savedOrder.paymentStatus,
-                totalAmount: savedOrder.totalAmount
-            };
+      // Criar a entidade Order
+      const order = new Order(
+        "generated-id",
+        user, // Objeto User
+        ORDER_STATUSES[0], // Status inicial como "OPENED"
+        orderProducts as any, // Lista de { product: Product, quantity: number, price: number }
+        new Date(), // Data de criação
+        PAYMENT_STATUSES[0], // Status de pagamento "PENDING"
+        totalAmount // Total calculado
+      );
 
-        } catch (error: any) {
-            // Tratamento de erro específico aqui
-            throw new Error(`Failed to create order: ${error.message}`);
-        }
+      // Salvar o pedido no repositório
+      const savedOrder = await this.orderRepository.save(order);
+
+      // Retornar um DTO
+      return {
+        _id: savedOrder._id,
+        user: savedOrder.user,
+        status: savedOrder.status,
+        orderProducts,
+        createdAt: savedOrder.createdAt,
+        paymentStatus: savedOrder.paymentStatus,
+        totalAmount: savedOrder.totalAmount,
+      };
+    } catch (error: any) {
+      // Tratamento de erro específico aqui
+      throw new Error(`Failed to create order: ${error.message}`);
     }
+  }
 }

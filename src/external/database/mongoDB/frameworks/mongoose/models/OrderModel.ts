@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
+import { ProductDTO } from "../../../../../../adapters/dtos/ProductDTO";
 
 // Define possíveis valores para status e pagamento
 export const ORDER_STATUSES = [
@@ -23,7 +24,7 @@ interface IOrder extends Document {
   user: mongoose.Schema.Types.ObjectId;
   status: (typeof ORDER_STATUSES)[number];
   orderProducts: Array<{
-    product: mongoose.Schema.Types.ObjectId;
+    product: ProductDTO;
     quantity: number;
     price: number;
   }>;
@@ -39,9 +40,12 @@ const OrderSchema: Schema = new Schema({
   orderProducts: [
     {
       product: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
-        required: true,
+        id: { type: String },
+        name: { type: String },
+        category: { type: String },
+        price: { type: Number },
+        description: { type: String },
+        image: { type: String },
       },
       quantity: { type: Number, required: true },
       price: { type: Number, required: true },

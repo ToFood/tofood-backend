@@ -8,7 +8,6 @@ export class MongoOrderRepository implements IOrderRepository {
   async findById(orderId: string): Promise<Order | null> {
     const orderData: Order | null = await OrderModel.findById(orderId)
       .populate("user")
-      .populate("orderProducts.product")
       .lean();
     if (!orderData) return null;
 
@@ -78,7 +77,6 @@ export class MongoOrderRepository implements IOrderRepository {
       status: { $in: status },
     })
       .populate("user")
-      .populate("orderProducts.product")
       .lean();
 
     return ordersData.map((orderData) => {
@@ -101,10 +99,7 @@ export class MongoOrderRepository implements IOrderRepository {
   }
 
   async findAll(): Promise<Order[]> {
-    const ordersData: Order[] = await OrderModel.find()
-      .populate("user")
-      .populate("orderProducts.product")
-      .lean();
+    const ordersData: Order[] = await OrderModel.find().populate("user").lean();
 
     return ordersData.map((orderData) => {
       const orderProductsData = orderData.orderProducts.map((orderProduct) => ({
@@ -135,7 +130,6 @@ export class MongoOrderRepository implements IOrderRepository {
       { new: true }
     )
       .populate("user")
-      .populate("orderProducts.product")
       .lean();
     if (!updatedOrderData) return null;
     return new Order(

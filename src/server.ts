@@ -17,7 +17,22 @@ console.log({ port });
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+
+// Configure CORS
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? ["https://39DD0DA514AC9109189FED40A976BC8A.gr7.us-east-1.eks.amazonaws.com"]
+    : ["http://localhost:3000"]; // Adicione o domínio local aqui para desenvolvimento
+
+const corsOptions = {
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions)); // Aplica o middleware com restrições
+
+// Swagger Documentation
 app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 // Test PostgreSQL connection and sync models

@@ -29,8 +29,11 @@ jobs:
       - name: Aguardando Aprovação Manual
         run: echo "🔄 Aguardando ação manual para continuar o pipeline..."
       - name: Verificar Aprovação
-        if: ${{ github.event.deployment_status.state == 'failure' }}
-        run: echo "⚠️ Aprovação negada. Encerrando pipeline sem erro."
+        run: |
+          if [[ "${{ github.event.deployment_status.state }}" == "failure" ]]; then
+            echo "⚠️ Aprovação negada. Finalizando pipeline sem erro."
+            exit 0 # Finaliza sem erro
+          fi
 
   test:
     name: 🧪 Testes da Aplicação

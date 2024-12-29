@@ -30,6 +30,7 @@ class UserController {
   };
 }
 
+
 /*DEFININDO OS ENDPOINTS*/
 router.get("/users/:cpf", UserController.getUserByCPF);
 router.post("/users", UserController.createUser);

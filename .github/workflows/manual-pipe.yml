@@ -23,16 +23,20 @@ jobs:
     name: ⏸️ Aprovação Manual
     runs-on: ubuntu-latest
     needs: build
-    environment:
-      name: approval-environment # Configurado no GitHub (explicação abaixo)
+    environment: 
+      name: approval-environment # Configurado no GitHub
     steps:
       - name: Aguardando Aprovação Manual
         run: echo "🔄 Aguardando ação manual para continuar o pipeline..."
+      - name: Verificar Aprovação
+        if: ${{ github.event.deployment_status.state == 'failure' }}
+        run: echo "⚠️ Aprovação negada. Encerrando pipeline sem erro."
 
   test:
     name: 🧪 Testes da Aplicação
     runs-on: ubuntu-latest
     needs: approval # Depende da aprovação para continuar
+    if: ${{ github.event.deployment_status.state == 'success' }} # Somente continua se aprovado
     steps:
       - name: 🎨 Checkout do repositório
         uses: actions/checkout@v4

@@ -31,7 +31,7 @@ class UserController {
 }
 
 /*DEFININDO OS ENDPOINTS*/
-router.gety("/users/:cpf", UserController.getUserByCPF);
+router.get("/users/:cpf", UserController.getUserByCPF);
 router.post("/users", UserController.createUser);
 
 export default router;

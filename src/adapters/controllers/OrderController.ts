@@ -23,7 +23,7 @@ class OrderController {
   };
 
   /*[CONSULTAR STATUS DO PAGAMENTO DO PEDIDO] */
-  static getOrderPaymentStatus = async (req: Request, res: Response) => {
+  static getOrderPaymentStatu = async (req: Request, res: Response) => {
     const { orderId } = req.query;
 
     const paymentStatus = await getOrderPaymentStatusUseCase.execute(String(orderId));
